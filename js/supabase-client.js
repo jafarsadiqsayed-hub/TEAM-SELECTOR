@@ -86,6 +86,92 @@ class SupabaseService {
     }
   }
 
+  // Insert or Update student profile in Supabase
+  async saveStudent(student) {
+    if (!this.client) return false;
+    try {
+      const payload = {
+        id: student.id,
+        name: student.name,
+        roll: student.rollNo,
+        section: student.section,
+        talent: student.subCategory || student.section,
+        photo: student.photo || null,
+        selected_by: student.selectedBy || (student.team ? (student.team === 'team-a' ? 'A' : 'B') : null),
+        selected_at: student.selectedAt || null,
+        selection_order: student.selectionOrder || null,
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await this.client
+        .from('students')
+        .upsert(payload, { onConflict: 'id' });
+
+      if (error) {
+        console.error('Supabase saveStudent error:', error);
+        return false;
+      }
+      console.log('✅ Student saved to Supabase:', student.name);
+      return true;
+    } catch (err) {
+      console.error('Supabase saveStudent exception:', err);
+      return false;
+    }
+  }
+
+  // Delete student from Supabase
+  async deleteStudent(studentId) {
+    if (!this.client) return false;
+    try {
+      const { error } = await this.client
+        .from('students')
+        .delete()
+        .eq('id', studentId);
+
+      if (error) {
+        console.error('Supabase deleteStudent error:', error);
+        return false;
+      }
+      console.log('✅ Student deleted from Supabase:', studentId);
+      return true;
+    } catch (err) {
+      console.error('Supabase deleteStudent exception:', err);
+      return false;
+    }
+  }
+
+  // Batch insert / upsert students
+  async batchUpsertStudents(studentsList) {
+    if (!this.client || !studentsList || studentsList.length === 0) return false;
+    try {
+      const payload = studentsList.map(s => ({
+        id: s.id,
+        name: s.name,
+        roll: s.rollNo,
+        section: s.section,
+        talent: s.subCategory || s.section,
+        photo: s.photo || null,
+        selected_by: s.selectedBy || (s.team ? (s.team === 'team-a' ? 'A' : 'B') : null),
+        selected_at: s.selectedAt || null,
+        selection_order: s.selectionOrder || null,
+        updated_at: new Date().toISOString()
+      }));
+
+      const { error } = await this.client
+        .from('students')
+        .upsert(payload, { onConflict: 'id' });
+
+      if (error) {
+        console.error('Supabase batchUpsertStudents error:', error);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error('Supabase batchUpsertStudents exception:', err);
+      return false;
+    }
+  }
+
   // Update a student selection in Supabase
   async selectStudent(studentId, teamShortCode, selectionOrder) {
     if (!this.client) return false;

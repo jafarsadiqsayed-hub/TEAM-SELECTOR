@@ -202,14 +202,43 @@ class TeamSelectionApp {
   }
 
   handleSupabaseStudentChange(payload) {
-    if (!payload || !payload.new) return;
-    const updated = payload.new;
-    const student = this.students.find(s => s.id === updated.id);
-    if (student) {
-      student.status = updated.selected_by ? 'selected' : 'available';
-      student.team = updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null;
-      student.selectedAt = updated.selected_at;
-      student.selectionOrder = updated.selection_order;
+    if (!payload) return;
+
+    if (payload.eventType === 'DELETE' && payload.old) {
+      this.students = this.students.filter(s => s.id !== payload.old.id);
+      window.storageManager.saveStudents(this.students, false);
+      this.renderAll();
+      return;
+    }
+
+    if (payload.new) {
+      const updated = payload.new;
+      const student = this.students.find(s => s.id === updated.id);
+      if (student) {
+        student.name = updated.name;
+        student.rollNo = updated.roll;
+        student.section = updated.section;
+        student.subCategory = updated.talent;
+        student.photo = updated.photo;
+        student.status = updated.selected_by ? 'selected' : 'available';
+        student.team = updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null;
+        student.selectedAt = updated.selected_at;
+        student.selectionOrder = updated.selection_order;
+      } else {
+        this.students.push({
+          id: updated.id,
+          rollNo: updated.roll,
+          name: updated.name,
+          section: updated.section,
+          subCategory: updated.talent,
+          photo: updated.photo,
+          status: updated.selected_by ? 'selected' : 'available',
+          team: updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null,
+          selectedBy: updated.selected_by,
+          selectedAt: updated.selected_at,
+          selectionOrder: updated.selection_order
+        });
+      }
       window.storageManager.saveStudents(this.students, false);
       this.renderAll();
     }
@@ -810,6 +839,12 @@ class TeamSelectionApp {
       this.history = this.history.filter(h => h.studentId !== id);
       window.storageManager.saveStudents(this.students);
       window.storageManager.saveHistory(this.history);
+
+      // Supabase Cloud Sync
+      if (window.supabaseService) {
+        window.supabaseService.deleteStudent(id);
+      }
+
       this.renderAll();
     }
   }
@@ -834,6 +869,7 @@ class TeamSelectionApp {
     const subCategory = this.dom.formStudentTalent.value.trim();
     const photo = this.dom.formStudentPhoto.value.trim() || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0a5c36&color=fff&size=200`;
 
+    let targetStudent = null;
     if (editId) {
       const student = this.students.find(s => s.id === editId);
       if (student) {
@@ -842,6 +878,7 @@ class TeamSelectionApp {
         student.section = section;
         student.subCategory = subCategory;
         student.photo = photo;
+        targetStudent = student;
       }
     } else {
       const newStudent = {
@@ -856,9 +893,16 @@ class TeamSelectionApp {
         selectionOrder: null
       };
       this.students.push(newStudent);
+      targetStudent = newStudent;
     }
 
     window.storageManager.saveStudents(this.students);
+
+    // Supabase Cloud Sync
+    if (window.supabaseService && targetStudent) {
+      window.supabaseService.saveStudent(targetStudent);
+    }
+
     this.closeStudentForm();
     this.renderAll();
     window.soundEngine.playClick();
@@ -892,6 +936,12 @@ class TeamSelectionApp {
           this.history = [];
           window.storageManager.saveStudents(this.students);
           window.storageManager.saveHistory(this.history);
+
+          // Supabase Cloud Sync
+          if (window.supabaseService) {
+            window.supabaseService.batchUpsertStudents(this.students);
+          }
+
           this.renderAll();
           alert(`Import complete! Loaded ${importedStudents.length} students.`);
         }
