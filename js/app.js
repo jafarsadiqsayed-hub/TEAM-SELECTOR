@@ -19,6 +19,7 @@ class TeamSelectionApp {
     this.loadFromStorage(true);
     this.bindEvents();
     this.renderAll();
+    this.initSupabase();
     console.log('Academy Arts Fest Team Selection Portal Initialized. Session:', window.appSessionId);
   }
 
@@ -136,7 +137,8 @@ class TeamSelectionApp {
       btnExportCsv: document.getElementById('btn-export-csv'),
       btnExportJson: document.getElementById('btn-export-json'),
       btnImportCsvFile: document.getElementById('btn-import-csv-file'),
-      btnRestoreSampleData: document.getElementById('btn-restore-sample-data')
+      btnRestoreSampleData: document.getElementById('btn-restore-sample-data'),
+      btnSupabaseRefresh: document.getElementById('btn-supabase-refresh')
     };
   }
 
@@ -157,6 +159,69 @@ class TeamSelectionApp {
     if (initial) {
       window.soundEngine.enabled = this.settings.soundEnabled ?? true;
       window.confettiEngine.enabled = this.settings.confettiEnabled ?? true;
+    }
+  }
+
+  initSupabase() {
+    if (window.supabaseService && window.supabaseService.isConnected) {
+      // 1. Subscribe to Live Realtime updates across devices
+      window.supabaseService.subscribeToRealtime({
+        onStudentChange: (payload) => this.handleSupabaseStudentChange(payload),
+        onStateChange: (payload) => this.handleSupabaseStateChange(payload)
+      });
+
+      // 2. Fetch latest data from Supabase
+      this.syncWithSupabase(false);
+    }
+  }
+
+  async syncWithSupabase(showToast = false) {
+    if (!window.supabaseService || !window.supabaseService.isConnected) return;
+    try {
+      const cloudStudents = await window.supabaseService.fetchStudents();
+      const cloudState = await window.supabaseService.fetchPortalState();
+
+      if (cloudStudents && cloudStudents.length > 0) {
+        this.students = cloudStudents;
+        window.storageManager.saveStudents(this.students, false);
+      }
+
+      if (cloudState && cloudState.current_turn) {
+        const turnKey = cloudState.current_turn === 'A' ? 'team-a' : 'team-b';
+        this.settings.currentTurn = turnKey;
+        window.storageManager.saveSettings(this.settings, false);
+      }
+
+      this.renderAll();
+      if (showToast) {
+        alert('✅ Successfully synchronized all rosters with Supabase Cloud Database!');
+      }
+    } catch (err) {
+      console.warn('Supabase sync error:', err);
+    }
+  }
+
+  handleSupabaseStudentChange(payload) {
+    if (!payload || !payload.new) return;
+    const updated = payload.new;
+    const student = this.students.find(s => s.id === updated.id);
+    if (student) {
+      student.status = updated.selected_by ? 'selected' : 'available';
+      student.team = updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null;
+      student.selectedAt = updated.selected_at;
+      student.selectionOrder = updated.selection_order;
+      window.storageManager.saveStudents(this.students, false);
+      this.renderAll();
+    }
+  }
+
+  handleSupabaseStateChange(payload) {
+    if (!payload || !payload.new) return;
+    const state = payload.new;
+    if (state.current_turn) {
+      this.settings.currentTurn = state.current_turn === 'A' ? 'team-a' : 'team-b';
+      window.storageManager.saveSettings(this.settings, false);
+      this.renderTurnIndicator();
     }
   }
 
@@ -233,6 +298,9 @@ class TeamSelectionApp {
     });
     this.dom.btnImportCsvFile.addEventListener('change', (e) => this.handleImportCsv(e));
     this.dom.btnRestoreSampleData.addEventListener('click', () => this.confirmRestoreSampleData());
+    if (this.dom.btnSupabaseRefresh) {
+      this.dom.btnSupabaseRefresh.addEventListener('click', () => this.syncWithSupabase(true));
+    }
 
     // Dismiss Hero Reveal Modal on Click
     this.dom.heroRevealModal.addEventListener('click', () => {
@@ -303,6 +371,13 @@ class TeamSelectionApp {
     this.settings.currentTurn = nextTurn;
     window.storageManager.saveSettings(this.settings);
 
+    // Supabase Cloud Sync
+    if (window.supabaseService) {
+      window.supabaseService.selectStudent(student.id, currentTurn === 'team-a' ? 'A' : 'B', student.selectionOrder);
+      window.supabaseService.updatePortalState(nextTurn);
+      window.supabaseService.recordHistory(student.id, student.name, currentTurn, 'SELECT');
+    }
+
     // Update UI
     this.renderAll();
   }
@@ -344,6 +419,9 @@ class TeamSelectionApp {
   setTurn(turn) {
     this.settings.currentTurn = turn;
     window.storageManager.saveSettings(this.settings);
+    if (window.supabaseService) {
+      window.supabaseService.updatePortalState(turn);
+    }
     window.soundEngine.playTurnSwitch();
     this.renderTurnIndicator();
   }
@@ -366,6 +444,13 @@ class TeamSelectionApp {
     window.storageManager.saveStudents(this.students);
     window.storageManager.saveHistory(this.history);
     window.storageManager.saveSettings(this.settings);
+
+    // Supabase Cloud Sync
+    if (window.supabaseService && student) {
+      window.supabaseService.undoStudentSelection(student.id);
+      window.supabaseService.updatePortalState(lastAction.team);
+      window.supabaseService.recordHistory(student.id, student.name, lastAction.team, 'UNDO');
+    }
 
     window.soundEngine.playUndo();
     this.renderAll();
@@ -401,6 +486,11 @@ class TeamSelectionApp {
     window.storageManager.saveStudents(this.students);
     window.storageManager.saveHistory(this.history);
     window.storageManager.saveSettings(this.settings);
+
+    // Supabase Cloud Sync
+    if (window.supabaseService) {
+      window.supabaseService.resetAllStudents();
+    }
 
     window.soundEngine.playUndo();
     this.renderAll();

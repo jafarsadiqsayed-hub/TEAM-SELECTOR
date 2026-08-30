@@ -35,6 +35,11 @@
 
     <!-- Header Action Toolbar -->
     <div class="header-actions">
+      <!-- Supabase Cloud Sync Status -->
+      <div class="cloud-status-pill connected" id="cloud-sync-status" title="Supabase Cloud Database Realtime Sync">
+        <span class="status-dot"></span> <span>Cloud Live</span>
+      </div>
+
       <button class="btn-undo" id="btn-header-undo" title="Undo the most recent selection (Ctrl+Z)">
         <span>↩️</span> Undo
       </button>
@@ -423,6 +428,19 @@
             </div>
           </div>
 
+          <h4 style="margin:1.25rem 0 0.65rem 0">⚡ Supabase Cloud Database</h4>
+          <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main); margin-bottom:1.25rem">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem">
+              <div>
+                <strong style="font-size:0.88rem; color:var(--primary-dark)">Project: tuejpbygjfxczwpxiadm</strong>
+                <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.2rem">Real-time PostgreSQL database with instant multi-device synchronization.</p>
+              </div>
+              <button class="btn-primary" id="btn-supabase-refresh" style="font-size:0.8rem; padding:0.4rem 0.85rem">
+                🔄 Sync with Cloud
+              </button>
+            </div>
+          </div>
+
           <h4 style="margin:1.25rem 0 0.65rem 0">Import Student List</h4>
           <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
             <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem">
@@ -445,6 +463,8 @@
   </div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
   <script src="js/data/sample-students.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/confetti.js"></script>
