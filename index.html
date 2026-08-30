@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kanniyath Usthad Islamic Academy – Arts Fest Team Selection Portal</title>
+  <title>Kanniyath Usthad Islamic Academy — Arts Fest Team Selection Portal</title>
   <meta name="description" content="Official live team selection portal for Kanniyath Usthad Islamic Academy Arts Fest 2026.">
+  
+  <!-- Premium Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="css/styles.css">
   <link rel="icon" type="image/jpeg" href="LOGO.jpg.jpeg">
 </head>
@@ -15,20 +21,22 @@
        ========================================================================== -->
   <header class="app-header">
     <div class="brand-section">
-      <img src="LOGO.jpg.jpeg" alt="Kanniyath Usthad Islamic Academy Logo" class="brand-logo-img" id="main-logo-img">
+      <div class="brand-logo-frame">
+        <img src="LOGO.jpg.jpeg" alt="Kanniyath Usthad Islamic Academy Logo" class="brand-logo-img" id="main-logo-img">
+      </div>
       <div class="brand-info">
         <h1 id="header-fest-title">KANNIYATH USTHAD ISLAMIC ACADEMY</h1>
-        <p id="header-fest-subtitle">ARTS FEST 2026 – OFFICIAL TEAM SELECTION PORTAL</p>
+        <p id="header-fest-subtitle">ARTS FEST 2026 — OFFICIAL TEAM SELECTION PORTAL</p>
       </div>
     </div>
 
     <!-- Active Turn Indicator -->
     <div class="turn-status-wrapper">
-      <div class="turn-pill team-a-active" id="live-turn-pill" title="Click to manually toggle turn">
+      <div class="turn-pill team-a-active" id="live-turn-pill" title="Click to toggle turn">
         <span class="turn-indicator-dot"></span>
         <div class="turn-text-group">
-          <span class="turn-label" id="turn-sub-label">CURRENT TURN</span>
-          <span class="turn-team-name" id="turn-team-display">TEAM A'S TURN</span>
+          <span class="turn-label" id="turn-sub-label">ACTIVE TURN</span>
+          <span class="turn-team-name" id="turn-team-display">TEAM A</span>
         </div>
       </div>
     </div>
@@ -37,31 +45,55 @@
     <div class="header-actions">
       <!-- Supabase Cloud Sync Status -->
       <div class="cloud-status-pill connected" id="cloud-sync-status" title="Supabase Cloud Database Realtime Sync">
-        <span class="status-dot"></span> <span>Cloud Live</span>
+        <span class="status-dot"></span>
+        <span class="status-label">Cloud Live</span>
       </div>
 
-      <button class="btn-undo" id="btn-header-undo" title="Undo the most recent selection (Ctrl+Z)">
-        <span>↩️</span> Undo
+      <button class="btn-action-outline btn-undo" id="btn-header-undo" title="Undo the most recent selection (Ctrl+Z)">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7v6h6"></path>
+          <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+        </svg>
+        <span>Undo</span>
       </button>
 
-      <button class="btn-icon" id="btn-toggle-sound" title="Toggle Audio Chimes">
-        <span id="sound-icon">🔊</span>
+      <button class="btn-icon" id="btn-toggle-sound" title="Toggle Sound Chimes">
+        <svg class="icon-svg" id="sound-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
       </button>
 
-      <button class="btn-icon" id="btn-toggle-confetti" title="Toggle Celebration Confetti">
-        <span id="confetti-icon">🎊</span>
+      <button class="btn-icon" id="btn-toggle-confetti" title="Toggle Celebration Effects">
+        <svg class="icon-svg" id="confetti-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+          <path d="M5 3v4"></path>
+          <path d="M19 17v4"></path>
+          <path d="M3 5h4"></path>
+          <path d="M17 19h4"></path>
+        </svg>
       </button>
 
-      <button class="btn-icon" id="btn-toggle-history" title="View Selection History">
-        <span>📜</span>
+      <button class="btn-icon" id="btn-toggle-history" title="View Selection Timeline">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
       </button>
 
       <button class="btn-icon" id="btn-toggle-presentation" title="Toggle Stage / Projector Fullscreen Mode (Key: F)">
-        <span>📺</span>
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
       </button>
 
-      <button class="btn-primary" id="btn-open-admin" title="Open Operator & Admin Control Center">
-        <span>⚙️</span> Admin
+      <button class="btn-primary btn-admin" id="btn-open-admin" title="Open Admin Control Center">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span>Admin</span>
       </button>
     </div>
   </header>
@@ -75,10 +107,10 @@
     <aside class="team-panel team-a-panel" id="team-a-container">
       <div class="team-panel-header">
         <div class="team-identity">
-          <div class="team-icon-badge" id="team-a-icon">🏛️</div>
+          <div class="team-badge-pill team-a-badge" id="team-a-icon">A</div>
           <div class="team-names-group">
             <h2 id="team-a-title">TEAM A</h2>
-            <span class="team-tagline" id="team-a-tagline">Dark Green Identity</span>
+            <span class="team-tagline" id="team-a-tagline">Dark Green Squad</span>
           </div>
         </div>
         <div class="team-count-badge" id="team-a-count">0</div>
@@ -86,71 +118,76 @@
 
       <!-- Category Stats Strip -->
       <div class="team-stats-strip" id="team-a-stats">
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Stg: <strong id="t-a-dnc">0</strong></span>
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Mus: <strong id="t-a-mus">0</strong></span>
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Thr: <strong id="t-a-thr">0</strong></span>
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Art: <strong id="t-a-art">0</strong></span>
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Lit: <strong id="t-a-lit">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Stage: <strong id="t-a-dnc">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Music: <strong id="t-a-mus">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Drama: <strong id="t-a-thr">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Arts: <strong id="t-a-art">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Lit: <strong id="t-a-lit">0</strong></span>
       </div>
 
       <div class="team-roster-list" id="team-a-roster">
         <div class="roster-empty-state">
-          <span class="roster-empty-icon">📋</span>
-          <p>No students drafted yet.</p>
-          <small>Selected students will appear here.</small>
+          <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <p>No students drafted yet</p>
+          <small>Selected members will appear in this roster</small>
         </div>
       </div>
     </aside>
 
-    <!-- CENTER STAGE: AVAILABLE STUDENT POOL & FILTERS -->
-    <section class="center-stage">
+    <!-- CENTER COLUMN: AVAILABLE STUDENTS STAGE -->
+    <section class="stage-center-panel">
       
-      <!-- Stage Toolbar: Search & Section Filter Tabs -->
-      <div class="stage-toolbar">
-        <div class="toolbar-top-row">
-          <div class="search-box-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="student-search-input" class="search-input" placeholder="Search by student name, roll number, or talent...">
-          </div>
-
-          <div class="pool-stats-badge">
-            <span>Available:</span>
-            <strong id="available-counter-display">75 / 75</strong>
-          </div>
+      <!-- Stage Filter & Search Bar -->
+      <div class="stage-control-bar">
+        <div class="search-box-wrapper">
+          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <input 
+            type="text" 
+            id="student-search-input" 
+            class="student-search-input" 
+            placeholder="Search student name, roll number, or category..."
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <div class="search-count-badge" id="available-counter-display">75 AVAILABLE</div>
         </div>
 
-        <!-- Section Filters -->
-        <div class="section-filter-bar" id="section-filter-buttons">
+        <!-- Section Category Segment Tabs -->
+        <div class="section-tabs-bar" id="section-filter-buttons">
           <button class="filter-btn active" data-section="all">
-            <span>All Sections</span>
-            <span class="filter-count" id="count-filter-all">75</span>
+            All <span class="filter-count" id="count-filter-all">75</span>
           </button>
           <button class="filter-btn" data-section="Cultural & Stage">
-            <span>Stage & Cultural</span>
-            <span class="filter-count" id="count-filter-dance">15</span>
+            Cultural & Stage <span class="filter-count" id="count-filter-dance">15</span>
           </button>
           <button class="filter-btn" data-section="Music & Vocals">
-            <span>Music & Vocals</span>
-            <span class="filter-count" id="count-filter-music">15</span>
+            Music & Vocals <span class="filter-count" id="count-filter-music">15</span>
           </button>
           <button class="filter-btn" data-section="Theater & Drama">
-            <span>Theater & Drama</span>
-            <span class="filter-count" id="count-filter-theater">15</span>
+            Theater & Drama <span class="filter-count" id="count-filter-theater">15</span>
           </button>
           <button class="filter-btn" data-section="Fine Arts & Design">
-            <span>Fine Arts & Design</span>
-            <span class="filter-count" id="count-filter-finearts">15</span>
+            Fine Arts & Design <span class="filter-count" id="count-filter-finearts">15</span>
           </button>
           <button class="filter-btn" data-section="Literary & Oratory">
-            <span>Literary & Oratory</span>
-            <span class="filter-count" id="count-filter-literary">15</span>
+            Literary & Oratory <span class="filter-count" id="count-filter-literary">15</span>
           </button>
         </div>
       </div>
 
-      <!-- Student Cards Scroll Grid -->
-      <div class="student-grid-scroll" id="student-grid-container">
-        <!-- Injected dynamically by JavaScript -->
+      <!-- Student Cards Grid -->
+      <div class="student-grid-scroll-area">
+        <div class="student-grid" id="student-grid-container">
+          <!-- Student cards injected by JS -->
+        </div>
       </div>
     </section>
 
@@ -158,10 +195,10 @@
     <aside class="team-panel team-b-panel" id="team-b-container">
       <div class="team-panel-header">
         <div class="team-identity">
-          <div class="team-icon-badge" id="team-b-icon">✨</div>
+          <div class="team-badge-pill team-b-badge" id="team-b-icon">B</div>
           <div class="team-names-group">
             <h2 id="team-b-title">TEAM B</h2>
-            <span class="team-tagline" id="team-b-tagline">Gold Amber Identity</span>
+            <span class="team-tagline" id="team-b-tagline">Gold Amber Squad</span>
           </div>
         </div>
         <div class="team-count-badge" id="team-b-count">0</div>
@@ -169,18 +206,23 @@
 
       <!-- Category Stats Strip -->
       <div class="team-stats-strip" id="team-b-stats">
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Stg: <strong id="t-b-dnc">0</strong></span>
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Mus: <strong id="t-b-mus">0</strong></span>
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Thr: <strong id="t-b-thr">0</strong></span>
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Art: <strong id="t-b-art">0</strong></span>
-        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Lit: <strong id="t-b-lit">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Stage: <strong id="t-b-dnc">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Music: <strong id="t-b-mus">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Drama: <strong id="t-b-thr">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Arts: <strong id="t-b-art">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Lit: <strong id="t-b-lit">0</strong></span>
       </div>
 
       <div class="team-roster-list" id="team-b-roster">
         <div class="roster-empty-state">
-          <span class="roster-empty-icon">📋</span>
-          <p>No students drafted yet.</p>
-          <small>Selected students will appear here.</small>
+          <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <p>No students drafted yet</p>
+          <small>Selected members will appear in this roster</small>
         </div>
       </div>
     </aside>
@@ -188,121 +230,141 @@
   </main>
 
   <!-- ==========================================================================
-       Hero Stage Reveal Spotlight Modal
+       Hero Selection Stage Reveal Overlay
        ========================================================================== -->
   <div class="hero-reveal-overlay" id="hero-reveal-modal">
     <div class="hero-reveal-card" id="hero-card-inner">
-      <div class="hero-announcement-pill" id="hero-pill-badge">
-        OFFICIAL SELECTION
+      <div class="hero-card-header">
+        <span class="hero-pill-badge" id="hero-pill-badge">OFFICIAL SELECTION</span>
+        <span class="hero-team-stamp" id="hero-team-stamp">SELECTED BY TEAM A</span>
       </div>
 
-      <div class="hero-photo-container">
-        <img src="" alt="Selected Student" class="hero-photo" id="hero-student-photo">
+      <div class="hero-photo-wrapper">
+        <img src="" alt="Selected Student" class="hero-student-photo" id="hero-student-photo">
       </div>
 
-      <h2 class="hero-student-name" id="hero-student-name">Student Name</h2>
-      <div class="hero-student-section" id="hero-student-details">Section • Talent Category</div>
+      <div class="hero-info">
+        <h2 class="hero-student-name" id="hero-student-name">Student Name</h2>
+        <p class="hero-student-details" id="hero-student-details">Cultural & Stage • Solo Classical</p>
+      </div>
 
-      <div class="hero-draft-stamp" id="hero-team-stamp">
-        SELECTED BY TEAM A
+      <div class="hero-card-footer">
+        <span class="hero-footer-note">Official Kanniyath Usthad Islamic Academy Arts Fest 2026</span>
       </div>
     </div>
   </div>
 
   <!-- ==========================================================================
-       Selection History Drawer
+       Selection History Timeline Drawer
        ========================================================================== -->
-  <aside class="history-drawer" id="history-drawer">
-    <div class="history-header">
-      <h3>📜 Selection Timeline</h3>
-      <button class="btn-icon" id="btn-close-history">✕</button>
+  <div class="history-drawer-backdrop" id="history-drawer">
+    <div class="history-drawer-panel">
+      <div class="history-drawer-header">
+        <div class="history-header-title">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <h3>Draft Selection Timeline</h3>
+        </div>
+        <button class="btn-close" id="btn-close-history" title="Close Timeline">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="history-items-container" id="history-items-list">
+        <!-- History items dynamically rendered -->
+      </div>
     </div>
-    <div class="history-list" id="history-items-list">
-      <!-- Injected via JavaScript -->
-    </div>
-  </aside>
+  </div>
 
   <!-- ==========================================================================
-       Admin / Operator Control Center Modal
+       Operator & Admin Control Center Modal
        ========================================================================== -->
-  <div class="modal-overlay" id="admin-modal">
-    <div class="modal-container">
-      <div class="modal-header">
-        <div class="modal-header-brand">
-          <img src="LOGO.jpg.jpeg" alt="Academy Logo" class="modal-header-logo">
-          <h2>Operator & Admin Center</h2>
+  <div class="admin-modal-backdrop" id="admin-modal">
+    <div class="admin-modal-window">
+      
+      <!-- Modal Header -->
+      <div class="admin-modal-header">
+        <div class="admin-modal-title">
+          <img src="LOGO.jpg.jpeg" alt="Logo" class="admin-logo-thumb">
+          <div>
+            <h3>Administration & Operations</h3>
+            <p>Kanniyath Usthad Islamic Academy Arts Fest Management</p>
+          </div>
         </div>
-        <button class="btn-icon" id="btn-close-admin">✕</button>
+        <button class="btn-close" id="btn-close-admin" title="Close Modal">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
-      <div class="modal-tabs-bar">
-        <button class="modal-tab-btn active" data-tab="tab-draft">🎮 Draft Flow</button>
-        <button class="modal-tab-btn" data-tab="tab-students">👥 Students Manager</button>
-        <button class="modal-tab-btn" data-tab="tab-teams">🎨 Branding & Teams</button>
-        <button class="modal-tab-btn" data-tab="tab-data">💾 Data & Export</button>
+      <!-- Navigation Tabs -->
+      <div class="admin-modal-tabs">
+        <button class="modal-tab-btn active" data-tab="tab-draft-control">Draft Operations</button>
+        <button class="modal-tab-btn" data-tab="tab-student-mgmt">Roster Management</button>
+        <button class="modal-tab-btn" data-tab="tab-branding-settings">Portal Settings</button>
+        <button class="modal-tab-btn" data-tab="tab-data-backup">Cloud & Records</button>
       </div>
 
-      <div class="modal-content-area">
+      <!-- Tab Body -->
+      <div class="admin-modal-body">
         
-        <!-- TAB 1: DRAFT CONTROLS -->
-        <div class="tab-pane active" id="tab-draft">
-          <h3 style="margin-bottom:1rem; font-size:1.05rem">Draft Turn Management</h3>
-          
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem">
-            <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
-              <h4>Manual Turn Switch</h4>
-              <p style="font-size:0.78rem; color:var(--text-muted); margin:0.4rem 0 0.85rem 0">Manually set which team makes the next pick.</p>
-              <div style="display:flex; gap:0.5rem">
-                <button class="btn-primary" id="admin-set-turn-a" style="background:var(--brand-green); color:#fff; flex:1">Set Team A</button>
-                <button class="btn-primary" id="admin-set-turn-b" style="background:var(--brand-gold); color:#fff; flex:1">Set Team B</button>
-              </div>
-            </div>
-
-            <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
-              <h4>🪙 Coin Toss (1st Pick)</h4>
-              <p style="font-size:0.78rem; color:var(--text-muted); margin:0.4rem 0 0.85rem 0">Randomly decide which team gets the initial turn.</p>
-              <button class="btn-primary" id="admin-coin-toss-btn" style="width:100%; background:var(--brand-green)">
-                🪙 Flip Coin for 1st Turn
-              </button>
+        <!-- TAB 1: DRAFT OPERATIONS -->
+        <div class="tab-pane active" id="tab-draft-control">
+          <div class="admin-section-block">
+            <h4>Live Turn Controls</h4>
+            <p class="section-desc">Override or set the active team turn for live selections.</p>
+            <div class="admin-button-group">
+              <button class="btn-primary btn-team-a" id="admin-set-turn-a">Set Active: TEAM A</button>
+              <button class="btn-primary btn-team-b" id="admin-set-turn-b">Set Active: TEAM B</button>
+              <button class="btn-secondary" id="admin-coin-toss-btn">Perform Coin Toss</button>
             </div>
           </div>
 
-          <div style="background:#fef2f2; padding:1rem; border-radius:var(--radius-md); border:1px solid #fecaca">
-            <h4 style="color:#b91c1c; margin-bottom:0.35rem">Reset & Safety Actions</h4>
-            <p style="font-size:0.78rem; color:#7f1d1d; margin-bottom:0.85rem">
-              Resetting will clear all current team assignments and return all students to the available pool.
-            </p>
-            <div style="display:flex; gap:0.75rem">
-              <button class="btn-undo" id="admin-undo-btn">↩️ Undo Last Pick</button>
-              <button class="btn-primary btn-danger" id="admin-reset-draft-btn">🔄 Reset Entire Selection</button>
+          <div class="admin-section-block">
+            <h4>Draft Management</h4>
+            <p class="section-desc">Undo recent choices or reset the selection pool.</p>
+            <div class="admin-button-group">
+              <button class="btn-secondary" id="admin-undo-btn">Undo Last Pick</button>
+              <button class="btn-danger" id="admin-reset-draft-btn">Reset All Selections</button>
             </div>
           </div>
         </div>
 
-        <!-- TAB 2: STUDENT MANAGER -->
-        <div class="tab-pane" id="tab-students">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
-            <h3>Student Roster (<span id="admin-student-count">75</span> Total)</h3>
-            <button class="btn-primary" id="btn-toggle-add-student">+ Add Student</button>
+        <!-- TAB 2: ROSTER MANAGEMENT -->
+        <div class="tab-pane" id="tab-student-mgmt">
+          <div class="roster-toolbar">
+            <span class="roster-count-label">Total Registered: <strong id="admin-student-count">75</strong> Students</span>
+            <button class="btn-primary" id="btn-toggle-add-student">+ Register Student</button>
           </div>
 
-          <!-- Add/Edit Student Form -->
-          <div id="add-student-form-wrapper" style="display:none; background:var(--bg-muted); padding:1.15rem; border-radius:var(--radius-md); border:1px solid var(--border-main); margin-bottom:1.25rem">
-            <h4 style="margin-bottom:0.65rem" id="student-form-title">Student Profile</h4>
+          <!-- Add / Edit Student Form Wrapper -->
+          <div class="add-student-form-card" id="add-student-form-wrapper" style="display:none;">
+            <h4 id="student-form-title">Student Registration</h4>
             <form id="student-edit-form">
               <input type="hidden" id="edit-student-id">
-              <div class="form-grid">
+              
+              <div class="form-grid-2">
                 <div class="form-group">
-                  <label for="form-student-name">Full Name *</label>
-                  <input type="text" id="form-student-name" class="form-input" placeholder="e.g. Rahul Sharma" required>
+                  <label>Full Name</label>
+                  <input type="text" id="form-student-name" required placeholder="e.g. Ananya Sharma">
                 </div>
                 <div class="form-group">
-                  <label for="form-student-roll">Roll Number / ID *</label>
-                  <input type="text" id="form-student-roll" class="form-input" placeholder="e.g. ART-101" required>
+                  <label>Roll Number / ID</label>
+                  <input type="text" id="form-student-roll" required placeholder="e.g. ART-101">
                 </div>
+              </div>
+
+              <div class="form-grid-2">
                 <div class="form-group">
-                  <label for="form-student-section">Section / Category *</label>
-                  <select id="form-student-section" class="form-select" required>
+                  <label>Festival Section</label>
+                  <select id="form-student-section" required>
                     <option value="Cultural & Stage">Cultural & Stage</option>
                     <option value="Music & Vocals">Music & Vocals</option>
                     <option value="Theater & Drama">Theater & Drama</option>
@@ -311,156 +373,145 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="form-student-talent">Specific Talent Specialty</label>
-                  <input type="text" id="form-student-talent" class="form-input" placeholder="e.g. Classical Solo">
-                </div>
-                <div class="form-group full-width">
-                  <label for="form-student-photo">Photo URL or Upload File</label>
-                  <div style="display:flex; gap:0.5rem">
-                    <input type="url" id="form-student-photo" class="form-input" style="flex:1" placeholder="https://example.com/photo.jpg">
-                    <label class="btn-icon" style="width:auto; padding:0 0.85rem; cursor:pointer" title="Upload photo from device">
-                      📁 Upload Photo
-                      <input type="file" id="form-photo-file" accept="image/*" style="display:none">
-                    </label>
-                  </div>
+                  <label>Specific Talent / Sub-Category</label>
+                  <input type="text" id="form-student-talent" required placeholder="e.g. Classical Solo">
                 </div>
               </div>
-              <div style="display:flex; gap:0.5rem; justify-content:flex-end">
-                <button type="button" class="btn-icon" style="width:auto; padding:0 0.85rem" id="btn-cancel-student-form">Cancel</button>
-                <button type="submit" class="btn-primary" id="btn-save-student">Save Profile</button>
+
+              <div class="form-group">
+                <label>Photo URL (or Upload)</label>
+                <div class="photo-input-group">
+                  <input type="text" id="form-student-photo" placeholder="https://... photo link">
+                  <label class="btn-secondary file-upload-btn">
+                    Browse
+                    <input type="file" id="form-photo-file" accept="image/*" style="display:none">
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-actions-row">
+                <button type="submit" class="btn-primary">Save Student</button>
+                <button type="button" class="btn-secondary" id="btn-cancel-student-form">Cancel</button>
               </div>
             </form>
           </div>
 
-          <!-- Students Table -->
-          <div style="max-height:340px; overflow-y:auto; border:1px solid var(--border-main); border-radius:var(--radius-md); background:var(--bg-surface)">
-            <table class="admin-student-table">
+          <!-- Student Table -->
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
               <thead>
                 <tr>
                   <th>Photo</th>
-                  <th>Roll No</th>
+                  <th>Roll</th>
                   <th>Name</th>
                   <th>Section</th>
+                  <th>Category</th>
                   <th>Status</th>
-                  <th style="text-align:right">Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="admin-students-tbody">
-                <!-- Rendered dynamically -->
+                <!-- Dynamically generated rows -->
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- TAB 3: TEAMS & BRANDING -->
-        <div class="tab-pane" id="tab-teams">
+        <!-- TAB 3: PORTAL SETTINGS -->
+        <div class="tab-pane" id="tab-branding-settings">
           <form id="settings-form">
-            <h4 style="margin-bottom:0.85rem">Academy & Fest Branding</h4>
-            <div class="form-grid">
+            <div class="admin-section-block">
+              <h4>Institutional Identity</h4>
               <div class="form-group">
-                <label for="set-college-title">College / Academy Name</label>
-                <input type="text" id="set-college-title" class="form-input" value="KANNIYATH USTHAD ISLAMIC ACADEMY">
+                <label>Academy Name</label>
+                <input type="text" id="set-college-title" required value="KANNIYATH USTHAD ISLAMIC ACADEMY">
               </div>
               <div class="form-group">
-                <label for="set-fest-subtitle">Fest Subtitle</label>
-                <input type="text" id="set-fest-subtitle" class="form-input" value="ARTS FEST 2026 – OFFICIAL TEAM SELECTION PORTAL">
+                <label>Festival Subtitle</label>
+                <input type="text" id="set-fest-subtitle" required value="ARTS FEST 2026 — OFFICIAL TEAM SELECTION PORTAL">
               </div>
             </div>
 
-            <h4 style="margin:1.25rem 0 0.85rem 0">Team Customization</h4>
-            <div class="form-grid">
-              <!-- Team A -->
-              <div style="background:var(--brand-green-subtle); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--team-a-border)">
-                <h4 style="color:var(--brand-green); margin-bottom:0.5rem">TEAM A (Dark Green)</h4>
-                <div class="form-group" style="margin-bottom:0.4rem">
-                  <label>Team Name</label>
-                  <input type="text" id="set-team-a-name" class="form-input" value="TEAM A">
-                </div>
-                <div class="form-group" style="margin-bottom:0.4rem">
-                  <label>Emblem Emoji</label>
-                  <input type="text" id="set-team-a-icon" class="form-input" value="🏛️">
+            <div class="admin-section-block">
+              <h4>Team Configuration</h4>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Team A Title</label>
+                  <input type="text" id="set-team-a-name" value="TEAM A">
+                  <input type="hidden" id="set-team-a-icon" value="A">
+                  <input type="hidden" id="set-team-a-tagline" value="Dark Green Squad">
                 </div>
                 <div class="form-group">
-                  <label>Tagline</label>
-                  <input type="text" id="set-team-a-tagline" class="form-input" value="Dark Green Identity">
-                </div>
-              </div>
-
-              <!-- Team B -->
-              <div style="background:var(--brand-gold-subtle); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--team-b-border)">
-                <h4 style="color:var(--brand-gold-dark); margin-bottom:0.5rem">TEAM B (Gold Amber)</h4>
-                <div class="form-group" style="margin-bottom:0.4rem">
-                  <label>Team Name</label>
-                  <input type="text" id="set-team-b-name" class="form-input" value="TEAM B">
-                </div>
-                <div class="form-group" style="margin-bottom:0.4rem">
-                  <label>Emblem Emoji</label>
-                  <input type="text" id="set-team-b-icon" class="form-input" value="✨">
-                </div>
-                <div class="form-group">
-                  <label>Tagline</label>
-                  <input type="text" id="set-team-b-tagline" class="form-input" value="Gold Amber Identity">
+                  <label>Team B Title</label>
+                  <input type="text" id="set-team-b-name" value="TEAM B">
+                  <input type="hidden" id="set-team-b-icon" value="B">
+                  <input type="hidden" id="set-team-b-tagline" value="Gold Amber Squad">
                 </div>
               </div>
             </div>
 
-            <div style="margin-top:1.25rem; display:flex; justify-content:flex-end">
-              <button type="submit" class="btn-primary">💾 Save Settings</button>
-            </div>
+            <button type="submit" class="btn-primary">Save Settings</button>
           </form>
         </div>
 
-        <!-- TAB 4: DATA & EXPORT -->
-        <div class="tab-pane" id="tab-data">
-          <h4 style="margin-bottom:0.85rem">Official Records & Export</h4>
+        <!-- TAB 4: CLOUD & RECORDS -->
+        <div class="tab-pane" id="tab-data-backup">
           
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem">
-            <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
-              <h4>📊 Excel / CSV Official Export</h4>
-              <p style="font-size:0.78rem; color:var(--text-muted); margin:0.35rem 0 0.85rem 0">Download the complete team selection roster for official Academy records and printing.</p>
-              <button class="btn-primary" id="btn-export-csv" style="width:100%">📥 Export Rosters (CSV)</button>
-            </div>
-
-            <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
-              <h4>📦 Full Database Backup</h4>
-              <p style="font-size:0.78rem; color:var(--text-muted); margin:0.35rem 0 0.85rem 0">Export a complete JSON snapshot of all students, settings, and timeline history.</p>
-              <button class="btn-icon" id="btn-export-json" style="width:100%; height:36px">📥 Export JSON Backup</button>
-            </div>
-          </div>
-
-          <h4 style="margin:1.25rem 0 0.65rem 0">⚡ Supabase Cloud Database</h4>
-          <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main); margin-bottom:1.25rem">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem">
-              <div>
-                <strong style="font-size:0.88rem; color:var(--primary-dark)">Project: tuejpbygjfxczwpxiadm</strong>
-                <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.2rem">Real-time PostgreSQL database with instant multi-device synchronization.</p>
+          <div class="admin-section-block">
+            <h4>Supabase Cloud Database</h4>
+            <div class="cloud-sync-card">
+              <div class="cloud-sync-info">
+                <div class="cloud-status-indicator">
+                  <span class="status-dot-lg"></span>
+                  <div>
+                    <strong>Connected to PostgreSQL Cloud</strong>
+                    <p>Project Ref: <code>tuejpbygjfxczwpxiadm</code></p>
+                  </div>
+                </div>
+                <button class="btn-primary" id="btn-supabase-refresh">Sync with Cloud</button>
               </div>
-              <button class="btn-primary" id="btn-supabase-refresh" style="font-size:0.8rem; padding:0.4rem 0.85rem">
-                🔄 Sync with Cloud
-              </button>
             </div>
           </div>
 
-          <h4 style="margin:1.25rem 0 0.65rem 0">Import Student List</h4>
-          <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
-            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem">
-              Import a custom list of students from CSV (Format: Roll Number, Name, Section, Category/Talent, Photo URL).
-            </p>
-            <div style="display:flex; gap:0.65rem">
-              <label class="btn-primary" style="cursor:pointer">
-                📂 Import CSV
-                <input type="file" id="btn-import-csv-file" accept=".csv,.txt" style="display:none">
-              </label>
-              <button class="btn-icon" id="btn-restore-sample-data" style="width:auto; padding:0 0.85rem">
-                🔄 Restore 75 Sample Students
-              </button>
+          <div class="admin-section-block">
+            <h4>Official Records & Export</h4>
+            <div class="export-grid">
+              <div class="export-card">
+                <h5>CSV Official Roster Export</h5>
+                <p>Download the complete drafted roster formatted for printing and official records.</p>
+                <button class="btn-primary" id="btn-export-csv">Export CSV</button>
+              </div>
+
+              <div class="export-card">
+                <h5>Full Database Backup</h5>
+                <p>Export a full JSON snapshot of all students, settings, and timeline history.</p>
+                <button class="btn-secondary" id="btn-export-json">Export JSON</button>
+              </div>
             </div>
           </div>
+
+          <div class="admin-section-block">
+            <h4>Import Roster</h4>
+            <div class="import-card">
+              <p>Import custom student records from a CSV file (Format: Roll Number, Name, Section, Category, Photo URL).</p>
+              <div class="import-actions">
+                <label class="btn-primary file-upload-btn">
+                  Import CSV File
+                  <input type="file" id="btn-import-csv-file" accept=".csv,.txt" style="display:none">
+                </label>
+                <button class="btn-secondary" id="btn-restore-sample-data">Restore Default 75 Students</button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>
     </div>
   </div>
+
+  <!-- Canvas Celebration Layer -->
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

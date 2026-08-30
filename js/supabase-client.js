@@ -258,10 +258,10 @@ class SupabaseService {
           if (statusEl) {
             if (status === 'SUBSCRIBED') {
               statusEl.className = 'cloud-status-pill connected';
-              statusEl.innerHTML = '<span class="status-dot"></span> <span>Cloud Live</span>';
+              statusEl.innerHTML = '<span class="status-dot"></span> <span class="status-label">Cloud Live</span>';
             } else if (status === 'TIMED_OUT' || status === 'CLOSED') {
               statusEl.className = 'cloud-status-pill warning';
-              statusEl.innerHTML = '<span class="status-dot"></span> <span>Local Sync</span>';
+              statusEl.innerHTML = '<span class="status-dot"></span> <span class="status-label">Local Sync</span>';
             }
           }
         });

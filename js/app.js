@@ -20,7 +20,7 @@ class TeamSelectionApp {
     this.bindEvents();
     this.renderAll();
     this.initSupabase();
-    console.log('Academy Arts Fest Team Selection Portal Initialized. Session:', window.appSessionId);
+    console.log('Kanniyath Usthad Islamic Academy Arts Fest Portal Initialized. Session:', window.appSessionId);
   }
 
   cacheDom() {
@@ -35,9 +35,9 @@ class TeamSelectionApp {
       // Buttons
       btnHeaderUndo: document.getElementById('btn-header-undo'),
       btnToggleSound: document.getElementById('btn-toggle-sound'),
-      soundIcon: document.getElementById('sound-icon'),
+      soundIconSvg: document.getElementById('sound-icon-svg'),
       btnToggleConfetti: document.getElementById('btn-toggle-confetti'),
-      confettiIcon: document.getElementById('confetti-icon'),
+      confettiIconSvg: document.getElementById('confetti-icon-svg'),
       btnToggleHistory: document.getElementById('btn-toggle-history'),
       btnTogglePresentation: document.getElementById('btn-toggle-presentation'),
       btnOpenAdmin: document.getElementById('btn-open-admin'),
@@ -194,7 +194,7 @@ class TeamSelectionApp {
 
       this.renderAll();
       if (showToast) {
-        alert('✅ Successfully synchronized all rosters with Supabase Cloud Database!');
+        alert('Rosters successfully synchronized with Cloud Database.');
       }
     } catch (err) {
       console.warn('Supabase sync error:', err);
@@ -338,7 +338,7 @@ class TeamSelectionApp {
     student.status = 'selected';
     student.team = currentTurn;
     student.selectionOrder = this.history.length + 1;
-    student.selectedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    student.selectedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // Record History
     const historyItem = {
@@ -355,7 +355,7 @@ class TeamSelectionApp {
     };
     this.history.unshift(historyItem);
 
-    // Save
+    // Save locally
     window.storageManager.saveStudents(this.students);
     window.storageManager.saveHistory(this.history);
 
@@ -398,7 +398,7 @@ class TeamSelectionApp {
 
     // Auto-dismiss
     clearTimeout(this.revealTimeout);
-    const duration = this.settings.revealDurationMs || 2400;
+    const duration = this.settings.revealDurationMs || 2200;
     this.revealTimeout = setTimeout(() => {
       this.dismissHeroReveal();
     }, duration);
@@ -465,12 +465,12 @@ class TeamSelectionApp {
     setTimeout(() => {
       this.setTurn(winner);
       window.confettiEngine.fire(teamColor);
-      alert(`🪙 Coin Toss Result:\n\n${teamName} won the toss and will make the FIRST PICK!`);
+      alert(`Coin Toss Result:\n\n${teamName} won the toss and has the active first pick.`);
     }, 600);
   }
 
   confirmResetDraft() {
-    const confirm = window.confirm('Are you sure you want to RESET the entire team selection?\n\nAll students will be returned to the available pool.');
+    const confirm = window.confirm('Are you sure you want to RESET all team selections?\n\nAll students will be returned to the available pool.');
     if (!confirm) return;
 
     this.students.forEach(s => {
@@ -511,27 +511,27 @@ class TeamSelectionApp {
 
   renderSettings() {
     this.dom.headerFestTitle.textContent = this.settings.collegeName || 'KANNIYATH USTHAD ISLAMIC ACADEMY';
-    this.dom.headerFestSubtitle.textContent = this.settings.festSubtitle || 'ARTS FEST 2026 – OFFICIAL TEAM SELECTION PORTAL';
+    this.dom.headerFestSubtitle.textContent = this.settings.festSubtitle || 'ARTS FEST 2026 — OFFICIAL TEAM SELECTION PORTAL';
 
     // Team A
     this.dom.teamATitle.textContent = this.settings.teamA.name;
-    this.dom.teamATagline.textContent = this.settings.teamA.tagline || 'Dark Green Identity';
-    this.dom.teamAIcon.textContent = this.settings.teamA.icon || '🏛️';
+    this.dom.teamATagline.textContent = this.settings.teamA.tagline || 'Dark Green Squad';
+    this.dom.teamAIcon.textContent = this.settings.teamA.icon || 'A';
 
     // Team B
     this.dom.teamBTitle.textContent = this.settings.teamB.name;
-    this.dom.teamBTagline.textContent = this.settings.teamB.tagline || 'Gold Amber Identity';
-    this.dom.teamBIcon.textContent = this.settings.teamB.icon || '✨';
+    this.dom.teamBTagline.textContent = this.settings.teamB.tagline || 'Gold Amber Squad';
+    this.dom.teamBIcon.textContent = this.settings.teamB.icon || 'B';
 
     // Admin Inputs
     if (this.dom.setCollegeTitle) this.dom.setCollegeTitle.value = this.settings.collegeName || 'KANNIYATH USTHAD ISLAMIC ACADEMY';
-    if (this.dom.setFestSubtitle) this.dom.setFestSubtitle.value = this.settings.festSubtitle || 'ARTS FEST 2026 – OFFICIAL TEAM SELECTION PORTAL';
+    if (this.dom.setFestSubtitle) this.dom.setFestSubtitle.value = this.settings.festSubtitle || 'ARTS FEST 2026 — OFFICIAL TEAM SELECTION PORTAL';
     if (this.dom.setTeamAName) this.dom.setTeamAName.value = this.settings.teamA.name;
-    if (this.dom.setTeamAIcon) this.dom.setTeamAIcon.value = this.settings.teamA.icon;
-    if (this.dom.setTeamATagline) this.dom.setTeamATagline.value = this.settings.teamA.tagline;
+    if (this.dom.setTeamAIcon) this.dom.setTeamAIcon.value = this.settings.teamA.icon || 'A';
+    if (this.dom.setTeamATagline) this.dom.setTeamATagline.value = this.settings.teamA.tagline || 'Dark Green Squad';
     if (this.dom.setTeamBName) this.dom.setTeamBName.value = this.settings.teamB.name;
-    if (this.dom.setTeamBIcon) this.dom.setTeamBIcon.value = this.settings.teamB.icon;
-    if (this.dom.setTeamBTagline) this.dom.setTeamBTagline.value = this.settings.teamB.tagline;
+    if (this.dom.setTeamBIcon) this.dom.setTeamBIcon.value = this.settings.teamB.icon || 'B';
+    if (this.dom.setTeamBTagline) this.dom.setTeamBTagline.value = this.settings.teamB.tagline || 'Gold Amber Squad';
   }
 
   renderTurnIndicator() {
@@ -544,11 +544,8 @@ class TeamSelectionApp {
     this.dom.liveTurnPill.classList.toggle('team-a-active', isTeamA);
     this.dom.liveTurnPill.classList.toggle('team-b-active', !isTeamA);
 
-    this.dom.turnTeamDisplay.textContent = `${activeTeam.name.toUpperCase()}'S TURN`;
-    this.dom.turnSubLabel.textContent = `CURRENT TURN (${activeTeam.shortCode})`;
-
-    this.dom.teamAContainer.classList.toggle('active-turn-border', isTeamA);
-    this.dom.teamBContainer.classList.toggle('active-turn-border', !isTeamA);
+    this.dom.turnTeamDisplay.textContent = activeTeam.name.toUpperCase();
+    this.dom.turnSubLabel.textContent = `ACTIVE TURN (${activeTeam.shortCode})`;
 
     this.dom.btnHeaderUndo.disabled = this.history.length === 0;
     this.dom.adminUndoBtn.disabled = this.history.length === 0;
@@ -558,7 +555,7 @@ class TeamSelectionApp {
     const query = this.searchQuery;
     const sectionFilter = this.activeSectionFilter;
 
-    let filtered = this.students.filter(student => {
+    const filtered = this.students.filter(student => {
       const matchSection = sectionFilter === 'all' || student.section === sectionFilter;
       const matchQuery = !query || 
         student.name.toLowerCase().includes(query) ||
@@ -571,60 +568,32 @@ class TeamSelectionApp {
 
     // Counts
     const availableCount = this.students.filter(s => s.status === 'available').length;
-    this.dom.availableCounterDisplay.textContent = `${availableCount} / ${this.students.length}`;
+    this.dom.availableCounterDisplay.textContent = `${availableCount} AVAILABLE`;
 
     this.dom.countFilterAll.textContent = this.students.filter(s => s.status === 'available').length;
-    this.dom.countFilterDance.textContent = this.students.filter(s => (s.section === 'Cultural & Stage' || s.section === 'Dance') && s.status === 'available').length;
-    this.dom.countFilterMusic.textContent = this.students.filter(s => (s.section === 'Music & Vocals' || s.section === 'Music') && s.status === 'available').length;
-    this.dom.countFilterTheater.textContent = this.students.filter(s => (s.section === 'Theater & Drama' || s.section === 'Theater') && s.status === 'available').length;
-    this.dom.countFilterFineArts.textContent = this.students.filter(s => (s.section === 'Fine Arts & Design' || s.section === 'Fine Arts') && s.status === 'available').length;
-    this.dom.countFilterLiterary.textContent = this.students.filter(s => (s.section === 'Literary & Oratory' || s.section === 'Literary') && s.status === 'available').length;
-
-    const sections = ['Cultural & Stage', 'Music & Vocals', 'Theater & Drama', 'Fine Arts & Design', 'Literary & Oratory'];
-    let html = '';
+    this.dom.countFilterDance.textContent = this.students.filter(s => s.section === 'Cultural & Stage' && s.status === 'available').length;
+    this.dom.countFilterMusic.textContent = this.students.filter(s => s.section === 'Music & Vocals' && s.status === 'available').length;
+    this.dom.countFilterTheater.textContent = this.students.filter(s => s.section === 'Theater & Drama' && s.status === 'available').length;
+    this.dom.countFilterFineArts.textContent = this.students.filter(s => s.section === 'Fine Arts & Design' && s.status === 'available').length;
+    this.dom.countFilterLiterary.textContent = this.students.filter(s => s.section === 'Literary & Oratory' && s.status === 'available').length;
 
     if (filtered.length === 0) {
-      html = `
-        <div class="roster-empty-state" style="padding:4rem 1rem">
-          <span class="roster-empty-icon">🔍</span>
-          <p>No matching students found.</p>
-          <small>Try clearing your search query or filter.</small>
+      this.dom.studentGridContainer.innerHTML = `
+        <div class="roster-empty-state" style="grid-column: 1 / -1; padding: 4rem 1rem;">
+          <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <p>No students match the current criteria</p>
+          <small>Try clearing your search query or choosing another section</small>
         </div>
       `;
-      this.dom.studentGridContainer.innerHTML = html;
       return;
     }
 
-    if (sectionFilter === 'all') {
-      sections.forEach(secName => {
-        const secStudents = filtered.filter(s => s.section === secName || (secName === 'Cultural & Stage' && s.section === 'Dance') || (secName === 'Music & Vocals' && s.section === 'Music') || (secName === 'Theater & Drama' && s.section === 'Theater') || (secName === 'Fine Arts & Design' && s.section === 'Fine Arts') || (secName === 'Literary & Oratory' && s.section === 'Literary'));
-        if (secStudents.length === 0) return;
+    this.dom.studentGridContainer.innerHTML = filtered.map(s => this.createStudentCardHtml(s)).join('');
 
-        const secAvailable = secStudents.filter(s => s.status === 'available').length;
-
-        html += `
-          <div class="section-group-wrapper">
-            <div class="section-group-title">
-              <h3>${secName}</h3>
-              <span class="section-badge-counter">${secAvailable} available / ${secStudents.length} total</span>
-            </div>
-            <div class="students-grid">
-              ${secStudents.map(s => this.createStudentCardHtml(s)).join('')}
-            </div>
-          </div>
-        `;
-      });
-    } else {
-      html = `
-        <div class="students-grid">
-          ${filtered.map(s => this.createStudentCardHtml(s)).join('')}
-        </div>
-      `;
-    }
-
-    this.dom.studentGridContainer.innerHTML = html;
-
-    this.dom.studentGridContainer.querySelectorAll('.student-card:not(.is-selected)').forEach(card => {
+    this.dom.studentGridContainer.querySelectorAll('.student-card:not(.selected)').forEach(card => {
       card.addEventListener('click', () => {
         const id = card.dataset.studentId;
         this.selectStudent(id);
@@ -634,27 +603,34 @@ class TeamSelectionApp {
 
   createStudentCardHtml(student) {
     const isSelected = student.status === 'selected';
-    const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=0a5c36&color=fff&size=150`;
+    const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=0a5c36&color=fff&size=200`;
+    const selectedClass = isSelected ? `selected ${student.team === 'team-a' ? 'selected-team-a' : 'selected-team-b'}` : '';
 
-    let stampHtml = '';
+    let bannerHtml = '';
     if (isSelected) {
-      const teamName = student.team === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name;
-      stampHtml = `<div class="selected-badge-stamp ${student.team === 'team-a' ? 'team-a' : 'team-b'}">SELECTED • ${teamName}</div>`;
+      const teamLabel = student.team === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name;
+      bannerHtml = `<div class="card-selected-banner">${teamLabel} • #${student.selectionOrder || '-'}</div>`;
     }
 
     const currentTurnTeamName = this.settings.currentTurn === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name;
 
     return `
-      <div class="student-card ${isSelected ? 'is-selected' : ''}" data-student-id="${student.id}" title="${isSelected ? 'Already selected' : 'Click to select for ' + currentTurnTeamName}">
-        ${stampHtml}
-        <div class="student-photo-wrapper">
-          <img src="${student.photo || fallbackPhoto}" alt="${student.name}" class="student-photo" loading="lazy" onerror="this.src='${fallbackPhoto}'">
-          <span class="section-tag-pill">${student.section}</span>
+      <div class="student-card ${selectedClass}" data-student-id="${student.id}" title="${isSelected ? 'Drafted to ' + (student.team === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name) : 'Draft for ' + currentTurnTeamName}">
+        ${bannerHtml}
+        <div class="card-photo-wrapper">
+          <img src="${student.photo || fallbackPhoto}" alt="${student.name}" class="student-card-photo" loading="lazy" onerror="this.src='${fallbackPhoto}'">
+          <span class="card-roll-tag">${student.rollNo}</span>
+          <span class="card-section-tag">${student.section}</span>
         </div>
-        <div class="student-name">${student.name}</div>
-        <div class="student-subcat">${student.subCategory || student.section}</div>
-        <div class="student-roll">${student.rollNo}</div>
-        ${!isSelected ? `<button class="card-select-btn">Select for ${this.settings.currentTurn === 'team-a' ? 'Team A' : 'Team B'}</button>` : ''}
+        <div class="card-body">
+          <h3 class="card-student-name">${student.name}</h3>
+          <p class="card-student-talent">${student.subCategory || student.section}</p>
+          <div class="card-action-footer">
+            <button class="btn-select-student" tabindex="-1">
+              ${isSelected ? 'Drafted' : 'Draft for ' + (this.settings.currentTurn === 'team-a' ? 'Team A' : 'Team B')}
+            </button>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -667,39 +643,44 @@ class TeamSelectionApp {
     this.dom.teamBCount.textContent = teamBStudents.length;
 
     // Team A Stats
-    this.dom.tADnc.textContent = teamAStudents.filter(s => s.section === 'Cultural & Stage' || s.section === 'Dance').length;
-    this.dom.tAMus.textContent = teamAStudents.filter(s => s.section === 'Music & Vocals' || s.section === 'Music').length;
-    this.dom.tAThr.textContent = teamAStudents.filter(s => s.section === 'Theater & Drama' || s.section === 'Theater').length;
-    this.dom.tAArt.textContent = teamAStudents.filter(s => s.section === 'Fine Arts & Design' || s.section === 'Fine Arts').length;
-    this.dom.tALit.textContent = teamAStudents.filter(s => s.section === 'Literary & Oratory' || s.section === 'Literary').length;
+    this.dom.tADnc.textContent = teamAStudents.filter(s => s.section === 'Cultural & Stage').length;
+    this.dom.tAMus.textContent = teamAStudents.filter(s => s.section === 'Music & Vocals').length;
+    this.dom.tAThr.textContent = teamAStudents.filter(s => s.section === 'Theater & Drama').length;
+    this.dom.tAArt.textContent = teamAStudents.filter(s => s.section === 'Fine Arts & Design').length;
+    this.dom.tALit.textContent = teamAStudents.filter(s => s.section === 'Literary & Oratory').length;
 
     // Team B Stats
-    this.dom.tBDnc.textContent = teamBStudents.filter(s => s.section === 'Cultural & Stage' || s.section === 'Dance').length;
-    this.dom.tBMus.textContent = teamBStudents.filter(s => s.section === 'Music & Vocals' || s.section === 'Music').length;
-    this.dom.tBThr.textContent = teamBStudents.filter(s => s.section === 'Theater & Drama' || s.section === 'Theater').length;
-    this.dom.tBArt.textContent = teamBStudents.filter(s => s.section === 'Fine Arts & Design' || s.section === 'Fine Arts').length;
-    this.dom.tBLit.textContent = teamBStudents.filter(s => s.section === 'Literary & Oratory' || s.section === 'Literary').length;
+    this.dom.tBDnc.textContent = teamBStudents.filter(s => s.section === 'Cultural & Stage').length;
+    this.dom.tBMus.textContent = teamBStudents.filter(s => s.section === 'Music & Vocals').length;
+    this.dom.tBThr.textContent = teamBStudents.filter(s => s.section === 'Theater & Drama').length;
+    this.dom.tBArt.textContent = teamBStudents.filter(s => s.section === 'Fine Arts & Design').length;
+    this.dom.tBLit.textContent = teamBStudents.filter(s => s.section === 'Literary & Oratory').length;
 
-    // Team A Roster List
+    // Render Lists
     if (teamAStudents.length === 0) {
       this.dom.teamARoster.innerHTML = `
         <div class="roster-empty-state">
-          <span class="roster-empty-icon">📋</span>
-          <p>No students drafted yet.</p>
-          <small>Selected students will appear here.</small>
+          <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+          </svg>
+          <p>No students drafted yet</p>
+          <small>Selected members will appear in this roster</small>
         </div>
       `;
     } else {
       this.dom.teamARoster.innerHTML = teamAStudents.map(s => this.createRosterCardHtml(s)).join('');
     }
 
-    // Team B Roster List
     if (teamBStudents.length === 0) {
       this.dom.teamBRoster.innerHTML = `
         <div class="roster-empty-state">
-          <span class="roster-empty-icon">📋</span>
-          <p>No students drafted yet.</p>
-          <small>Selected students will appear here.</small>
+          <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+          </svg>
+          <p>No students drafted yet</p>
+          <small>Selected members will appear in this roster</small>
         </div>
       `;
     } else {
@@ -711,12 +692,15 @@ class TeamSelectionApp {
     const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=0a5c36&color=fff&size=100`;
     return `
       <div class="roster-card">
-        <div class="roster-pick-order">#${student.selectionOrder || '-'}</div>
-        <img src="${student.photo || fallbackPhoto}" alt="${student.name}" class="roster-avatar" onerror="this.src='${fallbackPhoto}'">
-        <div class="roster-details">
-          <div class="roster-name">${student.name}</div>
-          <div class="roster-meta">
-            <span>${student.section}</span> • <span>${student.rollNo}</span>
+        <img src="${student.photo || fallbackPhoto}" alt="${student.name}" class="roster-photo-thumb" onerror="this.src='${fallbackPhoto}'">
+        <div class="roster-info">
+          <div class="roster-name-row">
+            <h4 class="roster-student-name">${student.name}</h4>
+            <span class="roster-order-badge">#${student.selectionOrder || '-'}</span>
+          </div>
+          <div class="roster-meta-row">
+            <span class="roster-roll-pill">${student.rollNo}</span>
+            <span class="roster-section-tag">${student.section}</span>
           </div>
         </div>
       </div>
@@ -727,26 +711,30 @@ class TeamSelectionApp {
     if (this.history.length === 0) {
       this.dom.historyItemsList.innerHTML = `
         <div class="roster-empty-state">
-          <span class="roster-empty-icon">📜</span>
-          <p>No selection activity yet.</p>
-          <small>Turn-by-turn history will appear here.</small>
+          <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <p>No selection activity yet</p>
+          <small>Turn-by-turn log will appear here</small>
         </div>
       `;
       return;
     }
 
     this.dom.historyItemsList.innerHTML = this.history.map(item => {
-      const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.studentName)}&background=0a5c36&color=fff&size=100`;
       const isTeamA = item.team === 'team-a';
       return `
-        <div class="history-item ${isTeamA ? 'team-a' : 'team-b'}">
-          <div class="history-index">#${item.selectionOrder}</div>
-          <img src="${item.photo || fallbackPhoto}" alt="${item.studentName}" class="history-avatar" onerror="this.src='${fallbackPhoto}'">
-          <div class="history-info">
-            <div class="history-student">${item.studentName}</div>
-            <div class="history-team-tag">${item.teamName} • ${item.section}</div>
+        <div class="history-item-row">
+          <span class="history-item-dot ${isTeamA ? 'dot-team-a' : 'dot-team-b'}"></span>
+          <div class="history-item-content">
+            <div class="history-item-meta">
+              <span class="history-team-label ${isTeamA ? 'team-a-text' : 'team-b-text'}">${item.teamName}</span>
+              <span class="history-time-stamp">${item.timestamp}</span>
+            </div>
+            <div class="history-student-title">${item.studentName}</div>
+            <div class="history-student-sub">${item.section} • #${item.selectionOrder}</div>
           </div>
-          <small style="color:var(--text-muted); font-size:0.68rem">${item.timestamp}</small>
         </div>
       `;
     }).join('');
@@ -756,23 +744,24 @@ class TeamSelectionApp {
     this.dom.adminStudentCount.textContent = this.students.length;
     this.dom.adminStudentsTbody.innerHTML = this.students.map(s => {
       const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=0a5c36&color=fff&size=60`;
-      let statusBadge = `<span style="color:var(--brand-green); font-weight:700">● Available</span>`;
+      let statusHtml = `<span style="color:var(--brand-green); font-weight:600">Available</span>`;
       if (s.status === 'selected') {
         const teamName = s.team === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name;
         const color = s.team === 'team-a' ? 'var(--brand-green)' : 'var(--brand-gold-dark)';
-        statusBadge = `<span style="color:${color}; font-weight:700">● ${teamName} (#${s.selectionOrder})</span>`;
+        statusHtml = `<span style="color:${color}; font-weight:700">${teamName} (#${s.selectionOrder})</span>`;
       }
 
       return `
         <tr>
-          <td><img src="${s.photo || fallbackPhoto}" style="width:28px; height:28px; border-radius:50%; object-fit:cover" onerror="this.src='${fallbackPhoto}'"></td>
+          <td><img src="${s.photo || fallbackPhoto}" class="admin-table-thumb" onerror="this.src='${fallbackPhoto}'"></td>
           <td style="font-weight:700; color:var(--brand-green)">${s.rollNo}</td>
-          <td style="font-weight:700">${s.name}</td>
+          <td style="font-weight:600">${s.name}</td>
           <td>${s.section}</td>
-          <td>${statusBadge}</td>
-          <td style="text-align:right">
-            <button class="btn-icon" style="display:inline-flex; width:26px; height:26px; font-size:0.75rem" onclick="window.app.editStudent('${s.id}')" title="Edit Student">✏️</button>
-            <button class="btn-icon btn-danger" style="display:inline-flex; width:26px; height:26px; font-size:0.75rem" onclick="window.app.deleteStudent('${s.id}')" title="Delete Student">🗑️</button>
+          <td style="color:var(--text-muted)">${s.subCategory || '-'}</td>
+          <td>${statusHtml}</td>
+          <td>
+            <button class="btn-table-action btn-table-edit" onclick="window.app.editStudent('${s.id}')">Edit</button>
+            <button class="btn-table-action btn-table-delete" onclick="window.app.deleteStudent('${s.id}')">Delete</button>
           </td>
         </tr>
       `;
@@ -793,7 +782,7 @@ class TeamSelectionApp {
       this.dom.formStudentTalent.value = student.subCategory || '';
       this.dom.formStudentPhoto.value = student.photo || '';
     } else {
-      document.getElementById('student-form-title').textContent = 'Add Student Profile';
+      document.getElementById('student-form-title').textContent = 'Register Student';
       this.dom.studentEditForm.reset();
       this.dom.editStudentId.value = '';
     }
@@ -878,20 +867,15 @@ class TeamSelectionApp {
   handleSaveSettings(e) {
     e.preventDefault();
     this.settings.collegeName = this.dom.setCollegeTitle.value.trim() || 'KANNIYATH USTHAD ISLAMIC ACADEMY';
-    this.settings.festSubtitle = this.dom.setFestSubtitle.value.trim() || 'ARTS FEST 2026 – OFFICIAL TEAM SELECTION PORTAL';
+    this.settings.festSubtitle = this.dom.setFestSubtitle.value.trim() || 'ARTS FEST 2026 — OFFICIAL TEAM SELECTION PORTAL';
 
     this.settings.teamA.name = this.dom.setTeamAName.value.trim() || 'TEAM A';
-    this.settings.teamA.icon = this.dom.setTeamAIcon.value.trim() || '🏛️';
-    this.settings.teamA.tagline = this.dom.setTeamATagline.value.trim() || 'Dark Green Identity';
-
     this.settings.teamB.name = this.dom.setTeamBName.value.trim() || 'TEAM B';
-    this.settings.teamB.icon = this.dom.setTeamBIcon.value.trim() || '✨';
-    this.settings.teamB.tagline = this.dom.setTeamBTagline.value.trim() || 'Gold Amber Identity';
 
     window.storageManager.saveSettings(this.settings);
     this.renderAll();
     this.closeAdminModal();
-    alert('Academy settings successfully saved!');
+    alert('Portal settings successfully updated.');
   }
 
   handleImportCsv(e) {
@@ -923,7 +907,7 @@ class TeamSelectionApp {
       window.storageManager.resetAllToDefault();
       this.loadFromStorage(true);
       this.renderAll();
-      alert('Sample dataset with 75 students successfully restored!');
+      alert('Sample dataset with 75 students successfully restored.');
     }
   }
 
@@ -933,15 +917,28 @@ class TeamSelectionApp {
   toggleSound() {
     this.settings.soundEnabled = !this.settings.soundEnabled;
     window.soundEngine.enabled = this.settings.soundEnabled;
-    this.dom.soundIcon.textContent = this.settings.soundEnabled ? '🔊' : '🔇';
     this.dom.btnToggleSound.classList.toggle('active', this.settings.soundEnabled);
+    if (this.dom.soundIconSvg) {
+      if (this.settings.soundEnabled) {
+        this.dom.soundIconSvg.innerHTML = `
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        `;
+      } else {
+        this.dom.soundIconSvg.innerHTML = `
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        `;
+      }
+    }
     window.storageManager.saveSettings(this.settings, false);
   }
 
   toggleConfetti() {
     this.settings.confettiEnabled = !this.settings.confettiEnabled;
     window.confettiEngine.enabled = this.settings.confettiEnabled;
-    this.dom.confettiIcon.textContent = this.settings.confettiEnabled ? '🎊' : '🚫';
     this.dom.btnToggleConfetti.classList.toggle('active', this.settings.confettiEnabled);
     window.storageManager.saveSettings(this.settings, false);
   }

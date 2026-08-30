@@ -847,8 +847,8 @@ const DEFAULT_SETTINGS = {
     shortCode: "A",
     color: "#0a5c36", // Official Dark Green
     accentColor: "#c59b27", // Gold Accent
-    tagline: "Dark Green Identity",
-    icon: "🏛️"
+    tagline: "Dark Green Squad",
+    icon: "A"
   },
   teamB: {
     id: "team-b",
@@ -856,12 +856,12 @@ const DEFAULT_SETTINGS = {
     shortCode: "B",
     color: "#b38820", // Official Gold / Amber
     accentColor: "#0a5c36", // Dark Green Accent
-    tagline: "Gold Amber Identity",
-    icon: "✨"
+    tagline: "Gold Amber Squad",
+    icon: "B"
   },
   soundEnabled: true,
   confettiEnabled: true,
-  revealDurationMs: 2400,
+  revealDurationMs: 2200,
   currentTurn: "team-a",
   draftStatus: "in-progress"
 };
