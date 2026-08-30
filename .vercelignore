@@ -1,0 +1,5 @@
+*.bat
+*.ps1
+.git
+.gitignore
+*.log

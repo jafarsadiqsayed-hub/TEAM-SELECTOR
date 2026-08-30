@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanniyath Usthad Islamic Academy – Arts Fest Team Selection Portal</title>
+  <meta name="description" content="Official live team selection portal for Kanniyath Usthad Islamic Academy Arts Fest 2026.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/jpeg" href="LOGO.jpg.jpeg">
+</head>
+<body class="turn-a-active">
+
+  <!-- ==========================================================================
+       App Header & Brand Bar
+       ========================================================================== -->
+  <header class="app-header">
+    <div class="brand-section">
+      <img src="LOGO.jpg.jpeg" alt="Kanniyath Usthad Islamic Academy Logo" class="brand-logo-img" id="main-logo-img">
+      <div class="brand-info">
+        <h1 id="header-fest-title">KANNIYATH USTHAD ISLAMIC ACADEMY</h1>
+        <p id="header-fest-subtitle">ARTS FEST 2026 – OFFICIAL TEAM SELECTION PORTAL</p>
+      </div>
+    </div>
+
+    <!-- Active Turn Indicator -->
+    <div class="turn-status-wrapper">
+      <div class="turn-pill team-a-active" id="live-turn-pill" title="Click to manually toggle turn">
+        <span class="turn-indicator-dot"></span>
+        <div class="turn-text-group">
+          <span class="turn-label" id="turn-sub-label">CURRENT TURN</span>
+          <span class="turn-team-name" id="turn-team-display">TEAM A'S TURN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header Action Toolbar -->
+    <div class="header-actions">
+      <button class="btn-undo" id="btn-header-undo" title="Undo the most recent selection (Ctrl+Z)">
+        <span>↩️</span> Undo
+      </button>
+
+      <button class="btn-icon" id="btn-toggle-sound" title="Toggle Audio Chimes">
+        <span id="sound-icon">🔊</span>
+      </button>
+
+      <button class="btn-icon" id="btn-toggle-confetti" title="Toggle Celebration Confetti">
+        <span id="confetti-icon">🎊</span>
+      </button>
+
+      <button class="btn-icon" id="btn-toggle-history" title="View Selection History">
+        <span>📜</span>
+      </button>
+
+      <button class="btn-icon" id="btn-toggle-presentation" title="Toggle Stage / Projector Fullscreen Mode (Key: F)">
+        <span>📺</span>
+      </button>
+
+      <button class="btn-primary" id="btn-open-admin" title="Open Operator & Admin Control Center">
+        <span>⚙️</span> Admin
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       Main 3-Column Layout
+       ========================================================================== -->
+  <main class="main-layout">
+    
+    <!-- LEFT COLUMN: TEAM A ROSTER -->
+    <aside class="team-panel team-a-panel" id="team-a-container">
+      <div class="team-panel-header">
+        <div class="team-identity">
+          <div class="team-icon-badge" id="team-a-icon">🏛️</div>
+          <div class="team-names-group">
+            <h2 id="team-a-title">TEAM A</h2>
+            <span class="team-tagline" id="team-a-tagline">Dark Green Identity</span>
+          </div>
+        </div>
+        <div class="team-count-badge" id="team-a-count">0</div>
+      </div>
+
+      <!-- Category Stats Strip -->
+      <div class="team-stats-strip" id="team-a-stats">
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Stg: <strong id="t-a-dnc">0</strong></span>
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Mus: <strong id="t-a-mus">0</strong></span>
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Thr: <strong id="t-a-thr">0</strong></span>
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Art: <strong id="t-a-art">0</strong></span>
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-green)"></span> Lit: <strong id="t-a-lit">0</strong></span>
+      </div>
+
+      <div class="team-roster-list" id="team-a-roster">
+        <div class="roster-empty-state">
+          <span class="roster-empty-icon">📋</span>
+          <p>No students drafted yet.</p>
+          <small>Selected students will appear here.</small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER STAGE: AVAILABLE STUDENT POOL & FILTERS -->
+    <section class="center-stage">
+      
+      <!-- Stage Toolbar: Search & Section Filter Tabs -->
+      <div class="stage-toolbar">
+        <div class="toolbar-top-row">
+          <div class="search-box-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="student-search-input" class="search-input" placeholder="Search by student name, roll number, or talent...">
+          </div>
+
+          <div class="pool-stats-badge">
+            <span>Available:</span>
+            <strong id="available-counter-display">75 / 75</strong>
+          </div>
+        </div>
+
+        <!-- Section Filters -->
+        <div class="section-filter-bar" id="section-filter-buttons">
+          <button class="filter-btn active" data-section="all">
+            <span>All Sections</span>
+            <span class="filter-count" id="count-filter-all">75</span>
+          </button>
+          <button class="filter-btn" data-section="Cultural & Stage">
+            <span>Stage & Cultural</span>
+            <span class="filter-count" id="count-filter-dance">15</span>
+          </button>
+          <button class="filter-btn" data-section="Music & Vocals">
+            <span>Music & Vocals</span>
+            <span class="filter-count" id="count-filter-music">15</span>
+          </button>
+          <button class="filter-btn" data-section="Theater & Drama">
+            <span>Theater & Drama</span>
+            <span class="filter-count" id="count-filter-theater">15</span>
+          </button>
+          <button class="filter-btn" data-section="Fine Arts & Design">
+            <span>Fine Arts & Design</span>
+            <span class="filter-count" id="count-filter-finearts">15</span>
+          </button>
+          <button class="filter-btn" data-section="Literary & Oratory">
+            <span>Literary & Oratory</span>
+            <span class="filter-count" id="count-filter-literary">15</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Student Cards Scroll Grid -->
+      <div class="student-grid-scroll" id="student-grid-container">
+        <!-- Injected dynamically by JavaScript -->
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: TEAM B ROSTER -->
+    <aside class="team-panel team-b-panel" id="team-b-container">
+      <div class="team-panel-header">
+        <div class="team-identity">
+          <div class="team-icon-badge" id="team-b-icon">✨</div>
+          <div class="team-names-group">
+            <h2 id="team-b-title">TEAM B</h2>
+            <span class="team-tagline" id="team-b-tagline">Gold Amber Identity</span>
+          </div>
+        </div>
+        <div class="team-count-badge" id="team-b-count">0</div>
+      </div>
+
+      <!-- Category Stats Strip -->
+      <div class="team-stats-strip" id="team-b-stats">
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Stg: <strong id="t-b-dnc">0</strong></span>
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Mus: <strong id="t-b-mus">0</strong></span>
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Thr: <strong id="t-b-thr">0</strong></span>
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Art: <strong id="t-b-art">0</strong></span>
+        <span class="stat-item"><span class="stat-dot" style="background:var(--brand-gold)"></span> Lit: <strong id="t-b-lit">0</strong></span>
+      </div>
+
+      <div class="team-roster-list" id="team-b-roster">
+        <div class="roster-empty-state">
+          <span class="roster-empty-icon">📋</span>
+          <p>No students drafted yet.</p>
+          <small>Selected students will appear here.</small>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- ==========================================================================
+       Hero Stage Reveal Spotlight Modal
+       ========================================================================== -->
+  <div class="hero-reveal-overlay" id="hero-reveal-modal">
+    <div class="hero-reveal-card" id="hero-card-inner">
+      <div class="hero-announcement-pill" id="hero-pill-badge">
+        OFFICIAL SELECTION
+      </div>
+
+      <div class="hero-photo-container">
+        <img src="" alt="Selected Student" class="hero-photo" id="hero-student-photo">
+      </div>
+
+      <h2 class="hero-student-name" id="hero-student-name">Student Name</h2>
+      <div class="hero-student-section" id="hero-student-details">Section • Talent Category</div>
+
+      <div class="hero-draft-stamp" id="hero-team-stamp">
+        SELECTED BY TEAM A
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Selection History Drawer
+       ========================================================================== -->
+  <aside class="history-drawer" id="history-drawer">
+    <div class="history-header">
+      <h3>📜 Selection Timeline</h3>
+      <button class="btn-icon" id="btn-close-history">✕</button>
+    </div>
+    <div class="history-list" id="history-items-list">
+      <!-- Injected via JavaScript -->
+    </div>
+  </aside>
+
+  <!-- ==========================================================================
+       Admin / Operator Control Center Modal
+       ========================================================================== -->
+  <div class="modal-overlay" id="admin-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-header-brand">
+          <img src="LOGO.jpg.jpeg" alt="Academy Logo" class="modal-header-logo">
+          <h2>Operator & Admin Center</h2>
+        </div>
+        <button class="btn-icon" id="btn-close-admin">✕</button>
+      </div>
+
+      <div class="modal-tabs-bar">
+        <button class="modal-tab-btn active" data-tab="tab-draft">🎮 Draft Flow</button>
+        <button class="modal-tab-btn" data-tab="tab-students">👥 Students Manager</button>
+        <button class="modal-tab-btn" data-tab="tab-teams">🎨 Branding & Teams</button>
+        <button class="modal-tab-btn" data-tab="tab-data">💾 Data & Export</button>
+      </div>
+
+      <div class="modal-content-area">
+        
+        <!-- TAB 1: DRAFT CONTROLS -->
+        <div class="tab-pane active" id="tab-draft">
+          <h3 style="margin-bottom:1rem; font-size:1.05rem">Draft Turn Management</h3>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem">
+            <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
+              <h4>Manual Turn Switch</h4>
+              <p style="font-size:0.78rem; color:var(--text-muted); margin:0.4rem 0 0.85rem 0">Manually set which team makes the next pick.</p>
+              <div style="display:flex; gap:0.5rem">
+                <button class="btn-primary" id="admin-set-turn-a" style="background:var(--brand-green); color:#fff; flex:1">Set Team A</button>
+                <button class="btn-primary" id="admin-set-turn-b" style="background:var(--brand-gold); color:#fff; flex:1">Set Team B</button>
+              </div>
+            </div>
+
+            <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
+              <h4>🪙 Coin Toss (1st Pick)</h4>
+              <p style="font-size:0.78rem; color:var(--text-muted); margin:0.4rem 0 0.85rem 0">Randomly decide which team gets the initial turn.</p>
+              <button class="btn-primary" id="admin-coin-toss-btn" style="width:100%; background:var(--brand-green)">
+                🪙 Flip Coin for 1st Turn
+              </button>
+            </div>
+          </div>
+
+          <div style="background:#fef2f2; padding:1rem; border-radius:var(--radius-md); border:1px solid #fecaca">
+            <h4 style="color:#b91c1c; margin-bottom:0.35rem">Reset & Safety Actions</h4>
+            <p style="font-size:0.78rem; color:#7f1d1d; margin-bottom:0.85rem">
+              Resetting will clear all current team assignments and return all students to the available pool.
+            </p>
+            <div style="display:flex; gap:0.75rem">
+              <button class="btn-undo" id="admin-undo-btn">↩️ Undo Last Pick</button>
+              <button class="btn-primary btn-danger" id="admin-reset-draft-btn">🔄 Reset Entire Selection</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: STUDENT MANAGER -->
+        <div class="tab-pane" id="tab-students">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+            <h3>Student Roster (<span id="admin-student-count">75</span> Total)</h3>
+            <button class="btn-primary" id="btn-toggle-add-student">+ Add Student</button>
+          </div>
+
+          <!-- Add/Edit Student Form -->
+          <div id="add-student-form-wrapper" style="display:none; background:var(--bg-muted); padding:1.15rem; border-radius:var(--radius-md); border:1px solid var(--border-main); margin-bottom:1.25rem">
+            <h4 style="margin-bottom:0.65rem" id="student-form-title">Student Profile</h4>
+            <form id="student-edit-form">
+              <input type="hidden" id="edit-student-id">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="form-student-name">Full Name *</label>
+                  <input type="text" id="form-student-name" class="form-input" placeholder="e.g. Rahul Sharma" required>
+                </div>
+                <div class="form-group">
+                  <label for="form-student-roll">Roll Number / ID *</label>
+                  <input type="text" id="form-student-roll" class="form-input" placeholder="e.g. ART-101" required>
+                </div>
+                <div class="form-group">
+                  <label for="form-student-section">Section / Category *</label>
+                  <select id="form-student-section" class="form-select" required>
+                    <option value="Cultural & Stage">Cultural & Stage</option>
+                    <option value="Music & Vocals">Music & Vocals</option>
+                    <option value="Theater & Drama">Theater & Drama</option>
+                    <option value="Fine Arts & Design">Fine Arts & Design</option>
+                    <option value="Literary & Oratory">Literary & Oratory</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="form-student-talent">Specific Talent Specialty</label>
+                  <input type="text" id="form-student-talent" class="form-input" placeholder="e.g. Classical Solo">
+                </div>
+                <div class="form-group full-width">
+                  <label for="form-student-photo">Photo URL or Upload File</label>
+                  <div style="display:flex; gap:0.5rem">
+                    <input type="url" id="form-student-photo" class="form-input" style="flex:1" placeholder="https://example.com/photo.jpg">
+                    <label class="btn-icon" style="width:auto; padding:0 0.85rem; cursor:pointer" title="Upload photo from device">
+                      📁 Upload Photo
+                      <input type="file" id="form-photo-file" accept="image/*" style="display:none">
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; gap:0.5rem; justify-content:flex-end">
+                <button type="button" class="btn-icon" style="width:auto; padding:0 0.85rem" id="btn-cancel-student-form">Cancel</button>
+                <button type="submit" class="btn-primary" id="btn-save-student">Save Profile</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Students Table -->
+          <div style="max-height:340px; overflow-y:auto; border:1px solid var(--border-main); border-radius:var(--radius-md); background:var(--bg-surface)">
+            <table class="admin-student-table">
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Roll No</th>
+                  <th>Name</th>
+                  <th>Section</th>
+                  <th>Status</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-students-tbody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 3: TEAMS & BRANDING -->
+        <div class="tab-pane" id="tab-teams">
+          <form id="settings-form">
+            <h4 style="margin-bottom:0.85rem">Academy & Fest Branding</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="set-college-title">College / Academy Name</label>
+                <input type="text" id="set-college-title" class="form-input" value="KANNIYATH USTHAD ISLAMIC ACADEMY">
+              </div>
+              <div class="form-group">
+                <label for="set-fest-subtitle">Fest Subtitle</label>
+                <input type="text" id="set-fest-subtitle" class="form-input" value="ARTS FEST 2026 – OFFICIAL TEAM SELECTION PORTAL">
+              </div>
+            </div>
+
+            <h4 style="margin:1.25rem 0 0.85rem 0">Team Customization</h4>
+            <div class="form-grid">
+              <!-- Team A -->
+              <div style="background:var(--brand-green-subtle); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--team-a-border)">
+                <h4 style="color:var(--brand-green); margin-bottom:0.5rem">TEAM A (Dark Green)</h4>
+                <div class="form-group" style="margin-bottom:0.4rem">
+                  <label>Team Name</label>
+                  <input type="text" id="set-team-a-name" class="form-input" value="TEAM A">
+                </div>
+                <div class="form-group" style="margin-bottom:0.4rem">
+                  <label>Emblem Emoji</label>
+                  <input type="text" id="set-team-a-icon" class="form-input" value="🏛️">
+                </div>
+                <div class="form-group">
+                  <label>Tagline</label>
+                  <input type="text" id="set-team-a-tagline" class="form-input" value="Dark Green Identity">
+                </div>
+              </div>
+
+              <!-- Team B -->
+              <div style="background:var(--brand-gold-subtle); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--team-b-border)">
+                <h4 style="color:var(--brand-gold-dark); margin-bottom:0.5rem">TEAM B (Gold Amber)</h4>
+                <div class="form-group" style="margin-bottom:0.4rem">
+                  <label>Team Name</label>
+                  <input type="text" id="set-team-b-name" class="form-input" value="TEAM B">
+                </div>
+                <div class="form-group" style="margin-bottom:0.4rem">
+                  <label>Emblem Emoji</label>
+                  <input type="text" id="set-team-b-icon" class="form-input" value="✨">
+                </div>
+                <div class="form-group">
+                  <label>Tagline</label>
+                  <input type="text" id="set-team-b-tagline" class="form-input" value="Gold Amber Identity">
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:1.25rem; display:flex; justify-content:flex-end">
+              <button type="submit" class="btn-primary">💾 Save Settings</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TAB 4: DATA & EXPORT -->
+        <div class="tab-pane" id="tab-data">
+          <h4 style="margin-bottom:0.85rem">Official Records & Export</h4>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem">
+            <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
+              <h4>📊 Excel / CSV Official Export</h4>
+              <p style="font-size:0.78rem; color:var(--text-muted); margin:0.35rem 0 0.85rem 0">Download the complete team selection roster for official Academy records and printing.</p>
+              <button class="btn-primary" id="btn-export-csv" style="width:100%">📥 Export Rosters (CSV)</button>
+            </div>
+
+            <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
+              <h4>📦 Full Database Backup</h4>
+              <p style="font-size:0.78rem; color:var(--text-muted); margin:0.35rem 0 0.85rem 0">Export a complete JSON snapshot of all students, settings, and timeline history.</p>
+              <button class="btn-icon" id="btn-export-json" style="width:100%; height:36px">📥 Export JSON Backup</button>
+            </div>
+          </div>
+
+          <h4 style="margin:1.25rem 0 0.65rem 0">Import Student List</h4>
+          <div style="background:var(--bg-muted); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-main)">
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem">
+              Import a custom list of students from CSV (Format: Roll Number, Name, Section, Category/Talent, Photo URL).
+            </p>
+            <div style="display:flex; gap:0.65rem">
+              <label class="btn-primary" style="cursor:pointer">
+                📂 Import CSV
+                <input type="file" id="btn-import-csv-file" accept=".csv,.txt" style="display:none">
+              </label>
+              <button class="btn-icon" id="btn-restore-sample-data" style="width:auto; padding:0 0.85rem">
+                🔄 Restore 75 Sample Students
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data/sample-students.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/confetti.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
