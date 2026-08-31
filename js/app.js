@@ -272,13 +272,13 @@ class TeamSelectionApp {
     // Update session header badge
     if (this.dom.roleBadgeIcon && this.dom.roleBadgeName) {
       if (role === 'admin') {
-        this.dom.roleBadgeIcon.textContent = '👑';
+        this.dom.roleBadgeIcon.innerHTML = `<svg style="width:14px;height:14px;display:inline-block;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
         this.dom.roleBadgeName.textContent = 'Admin Mode';
       } else if (role === 'presentation') {
-        this.dom.roleBadgeIcon.textContent = '📺';
+        this.dom.roleBadgeIcon.innerHTML = `<svg style="width:14px;height:14px;display:inline-block;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`;
         this.dom.roleBadgeName.textContent = 'TV Presentation';
       } else {
-        this.dom.roleBadgeIcon.textContent = '👁️';
+        this.dom.roleBadgeIcon.innerHTML = `<svg style="width:14px;height:14px;display:inline-block;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
         this.dom.roleBadgeName.textContent = 'Viewer Mode';
       }
     }

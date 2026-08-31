@@ -577,7 +577,12 @@
         <!-- Role 1: Admin -->
         <div class="login-role-card active" data-role-select="admin">
           <div class="role-card-badge role-admin-badge">Full Control</div>
-          <div class="role-card-icon">👑</div>
+          <div class="role-card-icon role-icon-admin">
+            <svg class="role-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+          </div>
           <h3 class="role-card-title">Admin</h3>
           <p class="role-card-desc">Draft & select students, undo picks, coin toss, roster edits & passwords.</p>
         </div>
@@ -585,7 +590,13 @@
         <!-- Role 2: Presentation Screen -->
         <div class="login-role-card" data-role-select="presentation">
           <div class="role-card-badge role-pres-badge">TV Stage View</div>
-          <div class="role-card-icon">📺</div>
+          <div class="role-card-icon role-icon-pres">
+            <svg class="role-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
           <h3 class="role-card-title">Presentation Screen</h3>
           <p class="role-card-desc">Live TV display with instant remote selection animations, audio & full-screen stage mode.</p>
         </div>
@@ -593,7 +604,12 @@
         <!-- Role 3: Public Viewer -->
         <div class="login-role-card" data-role-select="public">
           <div class="role-card-badge role-public-badge">No Password Needed</div>
-          <div class="role-card-icon">👁️</div>
+          <div class="role-card-icon role-icon-public">
+            <svg class="role-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </div>
           <h3 class="role-card-title">Public Viewer</h3>
           <p class="role-card-desc">Live audience portal to browse students, search sections, and watch team rosters on mobile or desktop.</p>
           <button type="button" class="btn-public-quick" id="btn-quick-public-enter">Enter as Viewer →</button>
@@ -624,7 +640,7 @@
         </div>
 
         <div class="login-hint-text">
-          <span>💡 Logins: <code>ADMIN: admin</code> • <code>PRESENTATION: presentation</code> • <code>PUBLIC: Free Access (No Password)</code></span>
+          <span>Logins: <code>ADMIN: admin</code> • <code>PRESENTATION: presentation</code> • <code>PUBLIC: Free Access (No Password)</code></span>
         </div>
       </form>
     </div>
