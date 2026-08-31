@@ -103,12 +103,6 @@
         </svg>
       </button>
 
-      <button class="btn-icon" id="btn-toggle-presentation" title="Toggle Stage / Projector Fullscreen Mode (Key: F)">
-        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-        </svg>
-      </button>
-
       <button class="btn-primary btn-admin" id="btn-open-admin" title="Open Admin Control Center">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
@@ -491,12 +485,6 @@
               </div>
 
               <div class="form-group">
-                <label>Presentation Screen Password</label>
-                <input type="text" id="pwd-pres-input" required placeholder="presentation">
-                <small class="form-hint">Controls TV / auditorium projector display mode with real-time remote animations.</small>
-              </div>
-
-              <div class="form-group">
                 <label>Public Viewer Password</label>
                 <input type="text" id="pwd-public-input" required placeholder="public">
                 <small class="form-hint">Controls general audience viewer mode (leave empty or keep simple for easy public access).</small>
@@ -593,21 +581,7 @@
           <p class="role-card-desc">Draft & select students, undo picks, coin toss, roster edits & passwords.</p>
         </div>
 
-        <!-- Role 2: Presentation Screen -->
-        <div class="login-role-card" data-role-select="presentation">
-          <div class="role-card-badge role-pres-badge">TV Stage View</div>
-          <div class="role-card-icon role-icon-pres">
-            <svg class="role-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-              <line x1="8" y1="21" x2="16" y2="21"></line>
-              <line x1="12" y1="17" x2="12" y2="21"></line>
-            </svg>
-          </div>
-          <h3 class="role-card-title">Presentation Screen</h3>
-          <p class="role-card-desc">Live TV display with instant remote selection animations, audio & full-screen stage mode.</p>
-        </div>
-
-        <!-- Role 3: Public Viewer -->
+        <!-- Role 2: Public Viewer -->
         <div class="login-role-card" data-role-select="public">
           <div class="role-card-badge role-public-badge">No Password Needed</div>
           <div class="role-card-icon role-icon-public">

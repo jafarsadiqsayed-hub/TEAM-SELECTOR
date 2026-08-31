@@ -1,7 +1,6 @@
 // Storage, Synchronization, and Import/Export Manager
 const DEFAULT_PASSWORDS = {
   admin: "admin",
-  presentation: "presentation",
   public: ""
 };
 
@@ -109,9 +108,6 @@ class StorageManager {
 
     if ((u === 'admin' || u === 'administrator') && p === (passwords.admin || 'admin')) {
       return 'admin';
-    }
-    if ((u === 'presentation' || u === 'screen' || u === 'tv' || u === 'stage') && p === (passwords.presentation || 'presentation')) {
-      return 'presentation';
     }
 
     return null;

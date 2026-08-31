@@ -6,10 +6,9 @@ class TeamSelectionApp {
     this.students = [];
     this.settings = {};
     this.history = [];
-    this.currentRole = null; // 'admin' | 'presentation' | 'public'
+    this.currentRole = null; // 'admin' | 'public'
     this.activeSectionFilter = 'all';
     this.searchQuery = '';
-    this.isPresentationMode = false;
     this.isRevealing = false;
     this.activeMobileView = 'stage'; // 'stage' | 'team-a' | 'team-b' | 'history'
 
@@ -99,7 +98,6 @@ class TeamSelectionApp {
       btnToggleConfetti: document.getElementById('btn-toggle-confetti'),
       confettiIconSvg: document.getElementById('confetti-icon-svg'),
       btnToggleHistory: document.getElementById('btn-toggle-history'),
-      btnTogglePresentation: document.getElementById('btn-toggle-presentation'),
       btnOpenAdmin: document.getElementById('btn-open-admin'),
 
       // Team A Panel
@@ -281,7 +279,7 @@ class TeamSelectionApp {
   // =========================================================================
   checkAuth() {
     const savedRole = window.storageManager.getCurrentRole();
-    if (savedRole && ['admin', 'presentation', 'public'].includes(savedRole)) {
+    if (savedRole && ['admin', 'public'].includes(savedRole)) {
       this.applyRole(savedRole);
       if (this.dom.loginGatewayModal) {
         this.dom.loginGatewayModal.style.display = 'none';
@@ -328,7 +326,7 @@ class TeamSelectionApp {
 
     const role = window.storageManager.verifyCredentials(username, password);
     if (!role) {
-      alert('Invalid credentials. Please check your username and password.\n\nDefaults:\nAdmin: admin / admin\nPresentation: presentation / presentation\nPublic: No Password');
+      alert('Invalid credentials. Please check your username and password.\n\nDefaults:\nAdmin: admin / admin\nPublic: No Password');
       return;
     }
 
@@ -351,7 +349,7 @@ class TeamSelectionApp {
     this.currentRole = role;
 
     // Update body classes
-    this.dom.body.classList.remove('role-admin', 'role-presentation', 'role-public');
+    this.dom.body.classList.remove('role-admin', 'role-public');
     this.dom.body.classList.add(`role-${role}`);
 
     // Update session header badge with clean vector SVGs
@@ -359,9 +357,6 @@ class TeamSelectionApp {
       if (role === 'admin') {
         this.dom.roleBadgeIcon.innerHTML = `<svg style="width:14px;height:14px;display:inline-block;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
         this.dom.roleBadgeName.textContent = 'Admin Mode';
-      } else if (role === 'presentation') {
-        this.dom.roleBadgeIcon.innerHTML = `<svg style="width:14px;height:14px;display:inline-block;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`;
-        this.dom.roleBadgeName.textContent = 'TV Presentation';
       } else {
         this.dom.roleBadgeIcon.innerHTML = `<svg style="width:14px;height:14px;display:inline-block;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
         this.dom.roleBadgeName.textContent = 'Viewer Mode';
@@ -374,19 +369,6 @@ class TeamSelectionApp {
 
     // Default mobile layout state
     this.setMobileView('stage');
-
-    // Auto presentation mode for TV
-    if (role === 'presentation') {
-      this.isPresentationMode = true;
-      this.dom.body.classList.add('presentation-mode');
-      this.dom.btnTogglePresentation.classList.add('active');
-    } else {
-      if (this.isPresentationMode && role !== 'presentation') {
-        this.isPresentationMode = false;
-        this.dom.body.classList.remove('presentation-mode');
-        this.dom.btnTogglePresentation.classList.remove('active');
-      }
-    }
 
     this.renderStudentGrid();
     this.renderTurnIndicator();
@@ -424,19 +406,16 @@ class TeamSelectionApp {
   loadPasswordInputs() {
     const passwords = window.storageManager.getPasswords();
     if (this.dom.pwdAdminInput) this.dom.pwdAdminInput.value = passwords.admin || 'admin';
-    if (this.dom.pwdPresInput) this.dom.pwdPresInput.value = passwords.presentation || 'presentation';
     if (this.dom.pwdPublicInput) this.dom.pwdPublicInput.value = passwords.public || '';
   }
 
   handleSavePasswords(e) {
     e.preventDefault();
     const adminPwd = (this.dom.pwdAdminInput.value || '').trim();
-    const presPwd = (this.dom.pwdPresInput.value || '').trim();
     const publicPwd = (this.dom.pwdPublicInput.value || '').trim();
 
     const newPasswords = {
       admin: adminPwd || 'admin',
-      presentation: presPwd || 'presentation',
       public: publicPwd || ''
     };
 
@@ -445,10 +424,9 @@ class TeamSelectionApp {
   }
 
   resetPasswordsDefault() {
-    if (confirm('Reset login passwords to defaults?\n\nAdmin: admin\nPresentation: presentation\nPublic: No Password')) {
+    if (confirm('Reset login passwords to defaults?\n\nAdmin: admin\nPublic: No Password')) {
       window.storageManager.savePasswords({
         admin: 'admin',
-        presentation: 'presentation',
         public: ''
       });
       this.loadPasswordInputs();
@@ -900,7 +878,6 @@ class TeamSelectionApp {
     }
     this.dom.btnToggleHistory.addEventListener('click', () => this.toggleHistoryDrawer());
     this.dom.btnCloseHistory.addEventListener('click', () => this.toggleHistoryDrawer(false));
-    this.dom.btnTogglePresentation.addEventListener('click', () => this.togglePresentationMode());
     this.dom.btnOpenAdmin.addEventListener('click', () => this.openAdminModal());
     this.dom.btnCloseAdmin.addEventListener('click', () => this.closeAdminModal());
 
@@ -980,8 +957,6 @@ class TeamSelectionApp {
         this.closeAdminModal();
         this.toggleHistoryDrawer(false);
         this.closeWheelModal(true);
-      } else if (e.key.toLowerCase() === 'f' && !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-        this.togglePresentationMode();
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         if (this.currentRole === 'admin') {
           e.preventDefault();
@@ -1710,23 +1685,6 @@ class TeamSelectionApp {
       this.dom.historyDrawer.classList.toggle('open', forceState);
     } else {
       this.dom.historyDrawer.classList.toggle('open');
-    }
-    window.soundEngine.playClick();
-  }
-
-  togglePresentationMode() {
-    this.isPresentationMode = !this.isPresentationMode;
-    this.dom.body.classList.toggle('presentation-mode', this.isPresentationMode);
-    this.dom.btnTogglePresentation.classList.toggle('active', this.isPresentationMode);
-
-    if (this.isPresentationMode) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-    } else {
-      if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      }
     }
     window.soundEngine.playClick();
   }

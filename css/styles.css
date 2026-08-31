@@ -2060,8 +2060,9 @@ body.role-public .student-card:not(.selected) {
 
 .login-roles-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.85rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  width: 100%;
 }
 
 .login-role-card {
@@ -2069,7 +2070,7 @@ body.role-public .student-card:not(.selected) {
   background: var(--bg-subtle);
   border: 2px solid var(--border-main);
   border-radius: var(--radius-lg);
-  padding: 1.25rem 1rem;
+  padding: 1.25rem 1.1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2107,11 +2108,6 @@ body.role-public .student-card:not(.selected) {
 .role-admin-badge {
   background: rgba(10, 92, 54, 0.2);
   color: var(--brand-green);
-}
-
-.role-pres-badge {
-  background: rgba(217, 119, 6, 0.2);
-  color: #d97706;
 }
 
 .role-public-badge {
