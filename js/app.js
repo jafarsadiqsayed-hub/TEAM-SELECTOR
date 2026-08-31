@@ -227,12 +227,21 @@ class TeamSelectionApp {
     }
   }
 
+  // Helper to reliably determine total drafted count across admin/viewer modes
+  getSelectedCount() {
+    if (!this.students || !Array.isArray(this.students)) return 0;
+    return this.students.filter(s => s.status === 'selected' || s.team || s.selectedBy).length;
+  }
+
   // =========================================================================
   // Snake Draft & Selection Round Calculation (A > B > B > A > A > B)
+  // Each round contains exactly 1st and 2nd Selection (e.g. Round 3 1st & 2nd Selection)
   // =========================================================================
   getSnakeTurnInfo(pickIndex, startingTeam = 'team-a') {
     const round = Math.floor(pickIndex / 2) + 1;
     const isFirstInRound = (pickIndex % 2 === 0);
+    const roundPickNumber = isFirstInRound ? 1 : 2;
+    const roundOrdinal = isFirstInRound ? '1st' : '2nd';
     const otherTeam = (startingTeam === 'team-a' ? 'team-b' : 'team-a');
 
     let turnTeam;
@@ -249,12 +258,13 @@ class TeamSelectionApp {
     }
 
     const overallPickNumber = pickIndex + 1;
-    const ordinal = this.getOrdinal(overallPickNumber);
 
     return {
       round,
+      roundPickNumber,
+      roundOrdinal,
       overallPickNumber,
-      ordinal,
+      ordinal: roundOrdinal, // Always 1st or 2nd Selection in that specific round
       turnTeam,
       sequenceDesc
     };
@@ -470,11 +480,16 @@ class TeamSelectionApp {
         window.storageManager.saveStudents(this.students, false);
       }
 
+      const totalSelected = this.getSelectedCount();
+      const turnInfo = this.getSnakeTurnInfo(totalSelected, this.settings.startingTeam || 'team-a');
+
       if (cloudState && cloudState.current_turn) {
         const turnKey = cloudState.current_turn === 'A' ? 'team-a' : 'team-b';
         this.settings.currentTurn = turnKey;
-        window.storageManager.saveSettings(this.settings, false);
+      } else {
+        this.settings.currentTurn = turnInfo.turnTeam;
       }
+      window.storageManager.saveSettings(this.settings, false);
 
       this.renderAll();
       if (showToast) {
@@ -491,6 +506,9 @@ class TeamSelectionApp {
     if (payload.eventType === 'DELETE' && payload.old) {
       this.students = this.students.filter(s => s.id !== payload.old.id);
       window.storageManager.saveStudents(this.students, false);
+      const totalSelected = this.getSelectedCount();
+      const turnInfo = this.getSnakeTurnInfo(totalSelected, this.settings.startingTeam || 'team-a');
+      this.settings.currentTurn = turnInfo.turnTeam;
       this.renderAll();
       return;
     }
@@ -528,6 +546,11 @@ class TeamSelectionApp {
         window.confettiEngine.fire(teamConfig.color || (student.team === 'team-a' ? '#0a5c36' : '#c59b27'));
         this.showHeroReveal(student, teamConfig, student.team);
       }
+
+      // Automatically recalculate Snake draft turn and round for remote viewer devices
+      const totalSelected = this.getSelectedCount();
+      const turnInfo = this.getSnakeTurnInfo(totalSelected, this.settings.startingTeam || 'team-a');
+      this.settings.currentTurn = turnInfo.turnTeam;
 
       this.renderAll();
     }
@@ -839,7 +862,9 @@ class TeamSelectionApp {
     // Header Actions
     this.dom.btnHeaderUndo.addEventListener('click', () => this.undoLastSelection());
     this.dom.btnToggleSound.addEventListener('click', () => this.toggleSound());
-    this.dom.btnToggleConfetti.addEventListener('click', () => this.toggleConfetti());
+    if (this.dom.btnToggleConfetti) {
+      this.dom.btnToggleConfetti.addEventListener('click', () => this.toggleConfetti());
+    }
     this.dom.btnToggleHistory.addEventListener('click', () => this.toggleHistoryDrawer());
     this.dom.btnCloseHistory.addEventListener('click', () => this.toggleHistoryDrawer(false));
     this.dom.btnTogglePresentation.addEventListener('click', () => this.togglePresentationMode());
@@ -945,15 +970,16 @@ class TeamSelectionApp {
     const student = this.students.find(s => s.id === studentId);
     if (!student || student.status === 'selected') return;
 
+    const totalSelected = this.getSelectedCount();
     // Calculate active Snake turn
-    const turnInfo = this.getSnakeTurnInfo(this.history.length, this.settings.startingTeam || 'team-a');
+    const turnInfo = this.getSnakeTurnInfo(totalSelected, this.settings.startingTeam || 'team-a');
     const draftingTeam = this.settings.currentTurn || turnInfo.turnTeam;
     const teamConfig = draftingTeam === 'team-a' ? this.settings.teamA : this.settings.teamB;
 
     // Update Student Record
     student.status = 'selected';
     student.team = draftingTeam;
-    student.selectionOrder = this.history.length + 1;
+    student.selectionOrder = totalSelected + 1;
     student.selectedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // Record History
@@ -967,6 +993,7 @@ class TeamSelectionApp {
       teamName: teamConfig.name,
       selectionOrder: student.selectionOrder,
       round: turnInfo.round,
+      roundPick: turnInfo.roundOrdinal,
       timestamp: student.selectedAt
     };
     this.history.unshift(historyItem);
@@ -988,7 +1015,7 @@ class TeamSelectionApp {
     this.showHeroReveal(student, teamConfig, draftingTeam);
 
     // Determine next Snake Turn automatically
-    const nextTurnInfo = this.getSnakeTurnInfo(this.history.length, this.settings.startingTeam || 'team-a');
+    const nextTurnInfo = this.getSnakeTurnInfo(totalSelected + 1, this.settings.startingTeam || 'team-a');
     this.settings.currentTurn = nextTurnInfo.turnTeam;
     window.storageManager.saveSettings(this.settings);
 
@@ -1018,8 +1045,12 @@ class TeamSelectionApp {
     this.dom.heroStudentName.textContent = student.name;
     this.dom.heroStudentDetails.textContent = `${student.section} • ID: ${student.rollNo}`;
 
+    const order = student.selectionOrder || 1;
+    const roundNum = Math.floor((order - 1) / 2) + 1;
+    const roundPick = (order - 1) % 2 === 0 ? '1st' : '2nd';
+
     this.dom.heroCardInner.className = `hero-reveal-card ${teamType === 'team-a' ? 'team-a-reveal' : 'team-b-reveal'}`;
-    this.dom.heroPillBadge.textContent = `OFFICIAL DRAFT SELECTION #${student.selectionOrder || '-'}`;
+    this.dom.heroPillBadge.textContent = `ROUND ${roundNum} • ${roundPick.toUpperCase()} SELECTION`;
     this.dom.heroTeamStamp.textContent = `SELECTED BY ${teamConfig.name.toUpperCase()}`;
 
     this.dom.heroRevealModal.classList.add('active');
@@ -1056,10 +1087,20 @@ class TeamSelectionApp {
 
   undoLastSelection() {
     if (this.currentRole !== 'admin') return;
-    if (this.history.length === 0) return;
 
-    const lastAction = this.history.shift();
-    const student = this.students.find(s => s.id === lastAction.studentId);
+    let lastAction = null;
+    let student = null;
+
+    if (this.history.length > 0) {
+      lastAction = this.history.shift();
+      student = this.students.find(s => s.id === lastAction.studentId);
+    } else {
+      const selected = this.students.filter(s => s.status === 'selected' || s.team);
+      if (selected.length === 0) return;
+      selected.sort((a, b) => (b.selectionOrder || 0) - (a.selectionOrder || 0));
+      student = selected[0];
+      lastAction = { studentId: student.id, studentName: student.name, team: student.team };
+    }
 
     if (student) {
       student.status = 'available';
@@ -1068,8 +1109,9 @@ class TeamSelectionApp {
       student.selectedAt = null;
     }
 
+    const totalSelected = this.getSelectedCount();
     // Roll back to the previous snake turn
-    const turnInfo = this.getSnakeTurnInfo(this.history.length, this.settings.startingTeam || 'team-a');
+    const turnInfo = this.getSnakeTurnInfo(totalSelected, this.settings.startingTeam || 'team-a');
     this.settings.currentTurn = turnInfo.turnTeam;
 
     window.storageManager.saveStudents(this.students);
@@ -1080,7 +1122,7 @@ class TeamSelectionApp {
     if (window.supabaseService && student) {
       window.supabaseService.undoStudentSelection(student.id);
       window.supabaseService.updatePortalState(turnInfo.turnTeam);
-      window.supabaseService.recordHistory(student.id, student.name, lastAction.team, 'UNDO');
+      window.supabaseService.recordHistory(student.id, student.name, lastAction ? lastAction.team : 'team-a', 'UNDO');
     }
 
     window.soundEngine.playUndo();
@@ -1153,7 +1195,8 @@ class TeamSelectionApp {
   }
 
   renderTurnIndicator() {
-    const turnInfo = this.getSnakeTurnInfo(this.history.length, this.settings.startingTeam || 'team-a');
+    const totalSelected = this.getSelectedCount();
+    const turnInfo = this.getSnakeTurnInfo(totalSelected, this.settings.startingTeam || 'team-a');
     const isTeamA = this.settings.currentTurn === 'team-a';
     const activeTeam = isTeamA ? this.settings.teamA : this.settings.teamB;
 
@@ -1166,16 +1209,16 @@ class TeamSelectionApp {
     this.dom.turnTeamDisplay.textContent = activeTeam.name.toUpperCase();
     this.dom.turnSubLabel.textContent = `ACTIVE TURN (${activeTeam.shortCode})`;
 
-    // Round & Selection Pick indicator
+    // Round & Selection Pick indicator: Always shows Round X and 1st Selection or 2nd Selection
     if (this.dom.roundNumberDisplay) {
       this.dom.roundNumberDisplay.textContent = `ROUND ${turnInfo.round}`;
     }
     if (this.dom.pickNumberDisplay) {
-      this.dom.pickNumberDisplay.textContent = `${turnInfo.ordinal} Selection (${turnInfo.sequenceDesc})`;
+      this.dom.pickNumberDisplay.textContent = `${turnInfo.roundOrdinal} Selection (${turnInfo.sequenceDesc})`;
     }
 
-    this.dom.btnHeaderUndo.disabled = this.history.length === 0 || this.currentRole !== 'admin';
-    this.dom.adminUndoBtn.disabled = this.history.length === 0 || this.currentRole !== 'admin';
+    this.dom.btnHeaderUndo.disabled = totalSelected === 0 || this.currentRole !== 'admin';
+    this.dom.adminUndoBtn.disabled = totalSelected === 0 || this.currentRole !== 'admin';
   }
 
   renderStudentGrid() {
@@ -1339,8 +1382,38 @@ class TeamSelectionApp {
     `;
   }
 
+  getHistoryList() {
+    if (this.history && this.history.length > 0) {
+      return this.history;
+    }
+    const selected = this.students.filter(s => s.status === 'selected' || s.team);
+    if (selected.length === 0) return [];
+    
+    // Synthesize history ordered by selectionOrder desc
+    const sorted = [...selected].sort((a, b) => (b.selectionOrder || 0) - (a.selectionOrder || 0));
+    return sorted.map(s => {
+      const isTeamA = s.team === 'team-a';
+      const order = s.selectionOrder || 1;
+      const roundNum = Math.floor((order - 1) / 2) + 1;
+      const roundPick = (order - 1) % 2 === 0 ? '1st' : '2nd';
+      return {
+        studentId: s.id,
+        studentName: s.name,
+        rollNo: s.rollNo,
+        section: s.section,
+        team: s.team,
+        teamName: isTeamA ? this.settings.teamA.name : this.settings.teamB.name,
+        selectionOrder: s.selectionOrder,
+        round: roundNum,
+        roundPick: roundPick,
+        timestamp: s.selectedAt || 'Drafted'
+      };
+    });
+  }
+
   renderHistory() {
-    if (this.history.length === 0) {
+    const historyList = this.getHistoryList();
+    if (historyList.length === 0) {
       this.dom.historyItemsList.innerHTML = `
         <div class="roster-empty-state">
           <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -1354,15 +1427,17 @@ class TeamSelectionApp {
       return;
     }
 
-    this.dom.historyItemsList.innerHTML = this.history.map(item => {
+    this.dom.historyItemsList.innerHTML = historyList.map(item => {
       const isTeamA = item.team === 'team-a';
+      const roundTag = item.round ? `Round ${item.round} • ` : '';
+      const pickTag = item.roundPick ? `${item.roundPick} Selection` : (item.selectionOrder ? `#${item.selectionOrder}` : '');
       return `
         <div class="history-item-row">
           <span class="history-item-dot ${isTeamA ? 'dot-team-a' : 'dot-team-b'}"></span>
           <div class="history-item-content">
             <div class="history-item-meta">
               <span class="history-team-label ${isTeamA ? 'team-a-text' : 'team-b-text'}">${item.teamName}</span>
-              <span class="history-time-stamp">${item.timestamp}</span>
+              <span class="history-time-stamp">${roundTag}${pickTag}</span>
             </div>
             <div class="history-student-title">${item.studentName}</div>
             <div class="history-student-sub">${item.section} • ID: ${item.rollNo || '-'}</div>
@@ -1587,7 +1662,9 @@ class TeamSelectionApp {
   toggleConfetti() {
     this.settings.confettiEnabled = !this.settings.confettiEnabled;
     window.confettiEngine.enabled = this.settings.confettiEnabled;
-    this.dom.btnToggleConfetti.classList.toggle('active', this.settings.confettiEnabled);
+    if (this.dom.btnToggleConfetti) {
+      this.dom.btnToggleConfetti.classList.toggle('active', this.settings.confettiEnabled);
+    }
     window.storageManager.saveSettings(this.settings, false);
   }
 
