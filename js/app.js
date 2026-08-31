@@ -6,6 +6,7 @@ class TeamSelectionApp {
     this.students = [];
     this.settings = {};
     this.history = [];
+    this.currentRole = null; // 'admin' | 'presentation' | 'public'
     this.activeSectionFilter = 'all';
     this.searchQuery = '';
     this.isPresentationMode = false;
@@ -18,6 +19,7 @@ class TeamSelectionApp {
     this.cacheDom();
     this.loadFromStorage(true);
     this.bindEvents();
+    this.checkAuth();
     this.renderAll();
     this.initSupabase();
     console.log('Kanniyath Usthad Islamic Academy Arts Fest Portal Initialized. Session:', window.appSessionId);
@@ -31,6 +33,20 @@ class TeamSelectionApp {
       liveTurnPill: document.getElementById('live-turn-pill'),
       turnTeamDisplay: document.getElementById('turn-team-display'),
       turnSubLabel: document.getElementById('turn-sub-label'),
+
+      // Session Role & Access
+      sessionRoleBadge: document.getElementById('session-role-badge'),
+      roleBadgeIcon: document.getElementById('role-badge-icon'),
+      roleBadgeName: document.getElementById('role-badge-name'),
+      btnLogoutRole: document.getElementById('btn-logout-role'),
+
+      // Login Gateway Modal
+      loginGatewayModal: document.getElementById('login-gateway-modal'),
+      loginForm: document.getElementById('login-form'),
+      loginUsername: document.getElementById('login-username'),
+      loginPassword: document.getElementById('login-password'),
+      btnLoginSubmit: document.getElementById('btn-login-submit'),
+      roleCards: document.querySelectorAll('.login-role-card'),
 
       // Buttons
       btnHeaderUndo: document.getElementById('btn-header-undo'),
@@ -126,6 +142,13 @@ class TeamSelectionApp {
       setTeamBIcon: document.getElementById('set-team-b-icon'),
       setTeamBTagline: document.getElementById('set-team-b-tagline'),
 
+      // Security Tab
+      passwordChangeForm: document.getElementById('password-change-form'),
+      pwdAdminInput: document.getElementById('pwd-admin-input'),
+      pwdPresInput: document.getElementById('pwd-pres-input'),
+      pwdPublicInput: document.getElementById('pwd-public-input'),
+      btnResetPasswordsDefault: document.getElementById('btn-reset-passwords-default'),
+
       // Data Tab
       btnExportCsv: document.getElementById('btn-export-csv'),
       btnExportJson: document.getElementById('btn-export-json'),
@@ -155,6 +178,142 @@ class TeamSelectionApp {
     }
   }
 
+  // =========================================================================
+  // Auth & Roles Management
+  // =========================================================================
+  checkAuth() {
+    const savedRole = window.storageManager.getCurrentRole();
+    if (savedRole && ['admin', 'presentation', 'public'].includes(savedRole)) {
+      this.applyRole(savedRole);
+      if (this.dom.loginGatewayModal) {
+        this.dom.loginGatewayModal.style.display = 'none';
+      }
+    } else {
+      this.openLoginGateway();
+    }
+  }
+
+  openLoginGateway() {
+    this.currentRole = null;
+    if (this.dom.loginGatewayModal) {
+      this.dom.loginGatewayModal.style.display = 'flex';
+      this.selectRoleTile('admin');
+    }
+  }
+
+  selectRoleTile(role) {
+    if (!this.dom.roleCards) return;
+    this.dom.roleCards.forEach(card => {
+      card.classList.toggle('active', card.dataset.roleSelect === role);
+    });
+
+    const passwords = window.storageManager.getPasswords();
+    if (this.dom.loginUsername) {
+      this.dom.loginUsername.value = role;
+    }
+    if (this.dom.loginPassword) {
+      this.dom.loginPassword.value = passwords[role] || role;
+    }
+  }
+
+  handleLoginFormSubmit(e) {
+    e.preventDefault();
+    const username = (this.dom.loginUsername.value || '').trim();
+    const password = (this.dom.loginPassword.value || '').trim();
+
+    const role = window.storageManager.verifyCredentials(username, password);
+    if (!role) {
+      alert('Invalid username or password. Please check your credentials.\n\nDefaults:\nAdmin: admin / admin\nPresentation: presentation / presentation\nPublic: public / public');
+      return;
+    }
+
+    window.storageManager.setCurrentRole(role, true);
+    this.applyRole(role);
+    this.dom.loginGatewayModal.style.display = 'none';
+    window.soundEngine.playSuccess();
+  }
+
+  applyRole(role) {
+    this.currentRole = role;
+
+    // Update body classes
+    this.dom.body.classList.remove('role-admin', 'role-presentation', 'role-public');
+    this.dom.body.classList.add(`role-${role}`);
+
+    // Update session header badge
+    if (this.dom.roleBadgeIcon && this.dom.roleBadgeName) {
+      if (role === 'admin') {
+        this.dom.roleBadgeIcon.textContent = '👑';
+        this.dom.roleBadgeName.textContent = 'Admin Mode';
+      } else if (role === 'presentation') {
+        this.dom.roleBadgeIcon.textContent = '📺';
+        this.dom.roleBadgeName.textContent = 'TV Presentation';
+      } else {
+        this.dom.roleBadgeIcon.textContent = '👁️';
+        this.dom.roleBadgeName.textContent = 'Viewer Mode';
+      }
+    }
+
+    // Auto presentation mode for TV
+    if (role === 'presentation') {
+      this.isPresentationMode = true;
+      this.dom.body.classList.add('presentation-mode');
+      this.dom.btnTogglePresentation.classList.add('active');
+    } else {
+      if (this.isPresentationMode && role !== 'presentation') {
+        this.isPresentationMode = false;
+        this.dom.body.classList.remove('presentation-mode');
+        this.dom.btnTogglePresentation.classList.remove('active');
+      }
+    }
+
+    this.renderStudentGrid();
+    this.renderTurnIndicator();
+  }
+
+  logout() {
+    window.storageManager.logout();
+    this.openLoginGateway();
+  }
+
+  loadPasswordInputs() {
+    const passwords = window.storageManager.getPasswords();
+    if (this.dom.pwdAdminInput) this.dom.pwdAdminInput.value = passwords.admin || 'admin';
+    if (this.dom.pwdPresInput) this.dom.pwdPresInput.value = passwords.presentation || 'presentation';
+    if (this.dom.pwdPublicInput) this.dom.pwdPublicInput.value = passwords.public || 'public';
+  }
+
+  handleSavePasswords(e) {
+    e.preventDefault();
+    const adminPwd = (this.dom.pwdAdminInput.value || '').trim();
+    const presPwd = (this.dom.pwdPresInput.value || '').trim();
+    const publicPwd = (this.dom.pwdPublicInput.value || '').trim();
+
+    const newPasswords = {
+      admin: adminPwd || 'admin',
+      presentation: presPwd || 'presentation',
+      public: publicPwd || 'public'
+    };
+
+    window.storageManager.savePasswords(newPasswords);
+    alert('Security Passwords successfully updated and saved!');
+  }
+
+  resetPasswordsDefault() {
+    if (confirm('Reset all login passwords to default credentials?\n\nAdmin: admin\nPresentation: presentation\nPublic: public')) {
+      window.storageManager.savePasswords({
+        admin: 'admin',
+        presentation: 'presentation',
+        public: 'public'
+      });
+      this.loadPasswordInputs();
+      alert('Passwords reset to defaults.');
+    }
+  }
+
+  // =========================================================================
+  // Supabase Realtime & Remote Sync
+  // =========================================================================
   initSupabase() {
     if (window.supabaseService && window.supabaseService.isConnected) {
       // 1. Subscribe to Live Realtime updates across devices
@@ -206,31 +365,38 @@ class TeamSelectionApp {
 
     if (payload.new) {
       const updated = payload.new;
-      const student = this.students.find(s => s.id === updated.id);
-      if (student) {
-        student.name = updated.name;
-        student.rollNo = updated.roll;
-        student.section = updated.section;
-        student.photo = updated.photo;
-        student.status = updated.selected_by ? 'selected' : 'available';
-        student.team = updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null;
-        student.selectedAt = updated.selected_at;
-        student.selectionOrder = updated.selection_order;
+      const isNewlySelected = updated.selected_by && (!payload.old || !payload.old.selected_by);
+
+      const student = {
+        id: updated.id,
+        rollNo: updated.roll,
+        name: updated.name,
+        section: updated.section,
+        photo: updated.photo,
+        status: updated.selected_by ? 'selected' : 'available',
+        team: updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null,
+        selectedBy: updated.selected_by,
+        selectedAt: updated.selected_at,
+        selectionOrder: updated.selection_order
+      };
+
+      const existingIndex = this.students.findIndex(s => s.id === updated.id);
+      if (existingIndex >= 0) {
+        this.students[existingIndex] = student;
       } else {
-        this.students.push({
-          id: updated.id,
-          rollNo: updated.roll,
-          name: updated.name,
-          section: updated.section,
-          photo: updated.photo,
-          status: updated.selected_by ? 'selected' : 'available',
-          team: updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null,
-          selectedBy: updated.selected_by,
-          selectedAt: updated.selected_at,
-          selectionOrder: updated.selection_order
-        });
+        this.students.push(student);
       }
+
       window.storageManager.saveStudents(this.students, false);
+
+      // Trigger Live Animation & Sound on Presentation / Remote screens when a student is drafted!
+      if (isNewlySelected && student.team) {
+        const teamConfig = student.team === 'team-a' ? this.settings.teamA : this.settings.teamB;
+        window.soundEngine.playSelectionSound(student.team);
+        window.confettiEngine.fire(teamConfig.color || (student.team === 'team-a' ? '#0a5c36' : '#c59b27'));
+        this.showHeroReveal(student, teamConfig, student.team);
+      }
+
       this.renderAll();
     }
   }
@@ -245,7 +411,29 @@ class TeamSelectionApp {
     }
   }
 
+  // =========================================================================
+  // Event Bindings
+  // =========================================================================
   bindEvents() {
+    // Role selection tiles on Login Modal
+    if (this.dom.roleCards) {
+      this.dom.roleCards.forEach(card => {
+        card.addEventListener('click', () => {
+          this.selectRoleTile(card.dataset.roleSelect);
+        });
+      });
+    }
+
+    // Login Form
+    if (this.dom.loginForm) {
+      this.dom.loginForm.addEventListener('submit', (e) => this.handleLoginFormSubmit(e));
+    }
+
+    // Switch Role / Logout
+    if (this.dom.btnLogoutRole) {
+      this.dom.btnLogoutRole.addEventListener('click', () => this.logout());
+    }
+
     // Search input
     this.dom.studentSearchInput.addEventListener('input', (e) => {
       this.searchQuery = e.target.value.toLowerCase().trim();
@@ -275,7 +463,9 @@ class TeamSelectionApp {
 
     // Live Turn Pill Click (Quick Toggle)
     this.dom.liveTurnPill.addEventListener('click', () => {
-      this.switchTurn();
+      if (this.currentRole === 'admin') {
+        this.switchTurn();
+      }
     });
 
     // Admin Tabs
@@ -284,7 +474,8 @@ class TeamSelectionApp {
         this.dom.modalTabBtns.forEach(b => b.classList.remove('active'));
         this.dom.tabPanes.forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
+        const targetPane = document.getElementById(btn.dataset.tab);
+        if (targetPane) targetPane.classList.add('active');
         window.soundEngine.playClick();
       });
     });
@@ -292,7 +483,9 @@ class TeamSelectionApp {
     // Admin Draft Controls
     this.dom.adminSetTurnA.addEventListener('click', () => this.setTurn('team-a'));
     this.dom.adminSetTurnB.addEventListener('click', () => this.setTurn('team-b'));
-    this.dom.adminCoinTossBtn.addEventListener('click', () => this.performCoinToss());
+    if (this.dom.adminCoinTossBtn) {
+      this.dom.adminCoinTossBtn.addEventListener('click', () => this.performCoinToss());
+    }
     this.dom.adminUndoBtn.addEventListener('click', () => this.undoLastSelection());
     this.dom.adminResetDraftBtn.addEventListener('click', () => this.confirmResetDraft());
 
@@ -308,6 +501,14 @@ class TeamSelectionApp {
 
     // Settings Form
     this.dom.settingsForm.addEventListener('submit', (e) => this.handleSaveSettings(e));
+
+    // Security & Password Form
+    if (this.dom.passwordChangeForm) {
+      this.dom.passwordChangeForm.addEventListener('submit', (e) => this.handleSavePasswords(e));
+    }
+    if (this.dom.btnResetPasswordsDefault) {
+      this.dom.btnResetPasswordsDefault.addEventListener('click', () => this.resetPasswordsDefault());
+    }
 
     // Data Export & Import
     this.dom.btnExportCsv.addEventListener('click', () => {
@@ -336,8 +537,10 @@ class TeamSelectionApp {
       } else if (e.key.toLowerCase() === 'f' && !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         this.togglePresentationMode();
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
-        e.preventDefault();
-        this.undoLastSelection();
+        if (this.currentRole === 'admin') {
+          e.preventDefault();
+          this.undoLastSelection();
+        }
       }
     });
   }
@@ -346,6 +549,9 @@ class TeamSelectionApp {
   // Core Selection Flow
   // ==========================================================================
   selectStudent(studentId) {
+    if (this.currentRole !== 'admin') {
+      return; // Only admin can draft students
+    }
     if (this.isRevealing) return;
 
     const student = this.students.find(s => s.id === studentId);
@@ -374,9 +580,14 @@ class TeamSelectionApp {
     };
     this.history.unshift(historyItem);
 
-    // Save locally
+    // Save locally and broadcast
     window.storageManager.saveStudents(this.students);
     window.storageManager.saveHistory(this.history);
+    window.storageManager.broadcast('STUDENT_SELECTED', {
+      student,
+      teamConfig,
+      currentTurn
+    });
 
     // Trigger Sound & Confetti
     window.soundEngine.playSelectionSound(currentTurn);
@@ -418,7 +629,7 @@ class TeamSelectionApp {
     this.dom.heroStudentDetails.textContent = `${student.section} • ID: ${student.rollNo}`;
 
     this.dom.heroCardInner.className = `hero-reveal-card ${teamType === 'team-a' ? 'team-a-reveal' : 'team-b-reveal'}`;
-    this.dom.heroPillBadge.textContent = `OFFICIAL DRAFT SELECTION #${student.selectionOrder}`;
+    this.dom.heroPillBadge.textContent = `OFFICIAL DRAFT SELECTION #${student.selectionOrder || '-'}`;
     this.dom.heroTeamStamp.textContent = `SELECTED BY ${teamConfig.name.toUpperCase()}`;
 
     this.dom.heroRevealModal.classList.add('active');
@@ -454,6 +665,7 @@ class TeamSelectionApp {
   }
 
   undoLastSelection() {
+    if (this.currentRole !== 'admin') return;
     if (this.history.length === 0) return;
 
     const lastAction = this.history.shift();
@@ -519,13 +731,12 @@ class TeamSelectionApp {
       window.supabaseService.resetAllStudents();
     }
 
-    window.soundEngine.playUndo();
+    window.soundEngine.playSuccess();
     this.renderAll();
-    this.closeAdminModal();
   }
 
   // ==========================================================================
-  // Renderers
+  // Rendering
   // ==========================================================================
   renderAll() {
     this.renderSettings();
@@ -574,8 +785,8 @@ class TeamSelectionApp {
     this.dom.turnTeamDisplay.textContent = activeTeam.name.toUpperCase();
     this.dom.turnSubLabel.textContent = `ACTIVE TURN (${activeTeam.shortCode})`;
 
-    this.dom.btnHeaderUndo.disabled = this.history.length === 0;
-    this.dom.adminUndoBtn.disabled = this.history.length === 0;
+    this.dom.btnHeaderUndo.disabled = this.history.length === 0 || this.currentRole !== 'admin';
+    this.dom.adminUndoBtn.disabled = this.history.length === 0 || this.currentRole !== 'admin';
   }
 
   renderStudentGrid() {
@@ -617,10 +828,14 @@ class TeamSelectionApp {
 
     this.dom.studentGridContainer.innerHTML = filtered.map(s => this.createStudentCardHtml(s)).join('');
 
+    // Click handler for drafting
     this.dom.studentGridContainer.querySelectorAll('.student-card:not(.selected)').forEach(card => {
       card.addEventListener('click', () => {
-        const id = card.dataset.studentId;
-        this.selectStudent(id);
+        if (this.currentRole !== 'admin') {
+          return; // Only admin can click cards to draft
+        }
+        const studentId = card.dataset.studentId;
+        this.selectStudent(studentId);
       });
     });
   }
@@ -640,7 +855,7 @@ class TeamSelectionApp {
     const currentTurnTeamName = this.settings.currentTurn === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name;
 
     return `
-      <div class="student-card ${selectedClass}" data-student-id="${student.id}" title="${isSelected ? 'Drafted to ' + (student.team === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name) : 'Draft for ' + currentTurnTeamName}">
+      <div class="student-card ${selectedClass}" data-student-id="${student.id}" title="${isSelected ? 'Drafted to ' + (student.team === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name) : (this.currentRole === 'admin' ? 'Draft for ' + currentTurnTeamName : student.name)}">
         ${bannerHtml}
         <div class="card-photo-wrapper">
           <img src="${photoSrc}" alt="${student.name}" class="student-card-photo" loading="lazy" onerror="this.src='${fallbackPhoto}'">
@@ -818,41 +1033,24 @@ class TeamSelectionApp {
     this.dom.editStudentId.value = '';
   }
 
-  editStudent(id) {
-    const student = this.students.find(s => s.id === id);
-    if (student) {
-      this.openStudentForm(student);
-    }
+  editStudent(studentId) {
+    const student = this.students.find(s => s.id === studentId);
+    if (!student) return;
+    this.openStudentForm(student);
   }
 
-  deleteStudent(id) {
-    const student = this.students.find(s => s.id === id);
+  deleteStudent(studentId) {
+    const student = this.students.find(s => s.id === studentId);
     if (!student) return;
 
-    if (confirm(`Are you sure you want to delete ${student.name} (${student.rollNo})?`)) {
-      this.students = this.students.filter(s => s.id !== id);
-      this.history = this.history.filter(h => h.studentId !== id);
+    if (confirm(`Are you sure you want to remove ${student.name} from the portal?`)) {
+      this.students = this.students.filter(s => s.id !== studentId);
       window.storageManager.saveStudents(this.students);
-      window.storageManager.saveHistory(this.history);
-
-      // Supabase Cloud Sync
       if (window.supabaseService) {
-        window.supabaseService.deleteStudent(id);
+        window.supabaseService.deleteStudent(studentId);
       }
-
       this.renderAll();
     }
-  }
-
-  handlePhotoFileUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
-      this.dom.formStudentPhoto.value = uploadEvent.target.result;
-    };
-    reader.readAsDataURL(file);
   }
 
   handleSaveStudentForm(e) {
@@ -861,22 +1059,26 @@ class TeamSelectionApp {
     const name = this.dom.formStudentName.value.trim();
     const rollNo = this.dom.formStudentRoll.value.trim();
     const section = this.dom.formStudentSection.value;
-    const photo = this.dom.formStudentPhoto.value.trim() || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0a5c36&color=fff&size=200`;
+    const photo = this.dom.formStudentPhoto.value.trim();
 
-    let targetStudent = null;
     if (editId) {
+      // Edit existing
       const student = this.students.find(s => s.id === editId);
       if (student) {
         student.name = name;
         student.rollNo = rollNo;
         student.section = section;
         student.photo = photo;
-        targetStudent = student;
+        window.storageManager.saveStudents(this.students);
+        if (window.supabaseService) {
+          window.supabaseService.saveStudent(student);
+        }
       }
     } else {
+      // Add new
       const newStudent = {
-        id: `STU-MANUAL-${Date.now()}`,
-        rollNo: rollNo,
+        id: `STU-${rollNo || Date.now()}`,
+        rollNo: rollNo || `SEC-${this.students.length + 1}`,
         name: name,
         section: section,
         photo: photo,
@@ -885,33 +1087,42 @@ class TeamSelectionApp {
         selectionOrder: null
       };
       this.students.push(newStudent);
-      targetStudent = newStudent;
-    }
-
-    window.storageManager.saveStudents(this.students);
-
-    // Supabase Cloud Sync
-    if (window.supabaseService && targetStudent) {
-      window.supabaseService.saveStudent(targetStudent);
+      window.storageManager.saveStudents(this.students);
+      if (window.supabaseService) {
+        window.supabaseService.saveStudent(newStudent);
+      }
     }
 
     this.closeStudentForm();
     this.renderAll();
-    window.soundEngine.playClick();
+    window.soundEngine.playSuccess();
+  }
+
+  handlePhotoFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      this.dom.formStudentPhoto.value = event.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   handleSaveSettings(e) {
     e.preventDefault();
-    this.settings.collegeName = this.dom.setCollegeTitle.value.trim() || 'KANNIYATH USTHAD ISLAMIC ACADEMY';
-    this.settings.festSubtitle = this.dom.setFestSubtitle.value.trim() || 'ARTS FEST 2026 — OFFICIAL TEAM SELECTION PORTAL';
-
+    this.settings.collegeName = this.dom.setCollegeTitle.value.trim();
+    this.settings.festSubtitle = this.dom.setFestSubtitle.value.trim();
     this.settings.teamA.name = this.dom.setTeamAName.value.trim() || 'TEAM A';
+    this.settings.teamA.icon = this.dom.setTeamAIcon.value.trim() || 'A';
+    this.settings.teamA.tagline = this.dom.setTeamATagline.value.trim() || 'Dark Green Squad';
     this.settings.teamB.name = this.dom.setTeamBName.value.trim() || 'TEAM B';
+    this.settings.teamB.icon = this.dom.setTeamBIcon.value.trim() || 'B';
+    this.settings.teamB.tagline = this.dom.setTeamBTagline.value.trim() || 'Gold Amber Squad';
 
     window.storageManager.saveSettings(this.settings);
     this.renderAll();
-    this.closeAdminModal();
-    alert('Portal settings successfully updated.');
+    alert('Portal Settings successfully saved!');
   }
 
   handleImportCsv(e) {
@@ -919,23 +1130,25 @@ class TeamSelectionApp {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (fileEvent) => {
-      const text = fileEvent.target.result;
-      const importedStudents = window.storageManager.parseCSV(text);
+    reader.onload = (event) => {
+      const csvText = event.target.result;
+      const importedStudents = window.storageManager.parseCSV(csvText);
+
       if (importedStudents.length > 0) {
-        if (confirm(`Successfully parsed ${importedStudents.length} students from CSV.\n\nDo you want to replace the current student list with this imported dataset?`)) {
+        if (confirm(`Found ${importedStudents.length} student records in CSV. Replace current student dataset?`)) {
           this.students = importedStudents;
           this.history = [];
+          this.settings.currentTurn = 'team-a';
           window.storageManager.saveStudents(this.students);
           window.storageManager.saveHistory(this.history);
+          window.storageManager.saveSettings(this.settings);
 
-          // Supabase Cloud Sync
           if (window.supabaseService) {
             window.supabaseService.batchUpsertStudents(this.students);
           }
 
           this.renderAll();
-          alert(`Import complete! Loaded ${importedStudents.length} students.`);
+          alert(`Successfully imported ${importedStudents.length} students!`);
         }
       } else {
         alert('Could not parse any valid student records from the provided file. Please check the CSV format.');
@@ -1012,6 +1225,11 @@ class TeamSelectionApp {
   }
 
   openAdminModal() {
+    if (this.currentRole !== 'admin') {
+      alert('Access restricted to Admin role.');
+      return;
+    }
+    this.loadPasswordInputs();
     this.dom.adminModal.classList.add('active');
     window.soundEngine.playClick();
   }
@@ -1023,6 +1241,14 @@ class TeamSelectionApp {
 
   handleRemoteSync(data) {
     if (data.sourceId === window.appSessionId) return;
+
+    if (data.type === 'STUDENT_SELECTED' && data.payload) {
+      const { student, teamConfig, currentTurn } = data.payload;
+      window.soundEngine.playSelectionSound(currentTurn);
+      window.confettiEngine.fire(teamConfig.color || (currentTurn === 'team-a' ? '#0a5c36' : '#c59b27'));
+      this.showHeroReveal(student, teamConfig, currentTurn);
+    }
+
     this.loadFromStorage(false);
     this.renderAll();
   }

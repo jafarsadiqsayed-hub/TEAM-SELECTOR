@@ -1653,3 +1653,248 @@ body.presentation-mode .brand-info h1 {
 body.presentation-mode .student-grid {
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
+
+/* ==============================================================================
+   Role-Based Control & Access Modes
+   ============================================================================== */
+.session-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(10, 92, 54, 0.15);
+  border: 1px solid rgba(10, 92, 54, 0.35);
+  color: var(--brand-green);
+  letter-spacing: 0.02em;
+}
+
+body.role-presentation .session-role-pill {
+  background: rgba(217, 119, 6, 0.15);
+  border-color: rgba(217, 119, 6, 0.35);
+  color: #d97706;
+}
+
+body.role-public .session-role-pill {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #3b82f6;
+}
+
+.btn-role-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Role Visibility Restrictions */
+body.role-presentation #btn-open-admin,
+body.role-presentation #btn-header-undo,
+body.role-presentation .card-action-footer,
+body.role-public #btn-open-admin,
+body.role-public #btn-header-undo,
+body.role-public .card-action-footer {
+  display: none !important;
+}
+
+/* In presentation & public mode, cards are display-only */
+body.role-presentation .student-card:not(.selected) {
+  cursor: default;
+}
+body.role-presentation .student-card:not(.selected):hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+body.role-public .student-card:not(.selected) {
+  cursor: pointer;
+}
+
+/* ==============================================================================
+   3-Tier Login Gateway Modal
+   ============================================================================== */
+.login-gateway-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 12, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.login-gateway-window {
+  width: 100%;
+  max-width: 820px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-header-section {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-logo-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brand-gold);
+  box-shadow: 0 0 15px rgba(217, 119, 6, 0.3);
+}
+
+.login-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.login-subtitle {
+  font-size: 0.85rem;
+  color: var(--brand-gold-dark);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.login-instruction {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin-top: -0.25rem;
+}
+
+.login-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .login-roles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.login-role-card {
+  position: relative;
+  background: var(--bg-subtle);
+  border: 2px solid var(--border-main);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-role-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand-green);
+  box-shadow: 0 10px 25px -5px rgba(10, 92, 54, 0.15);
+}
+
+.login-role-card.active {
+  background: rgba(10, 92, 54, 0.08);
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 2px rgba(10, 92, 54, 0.25);
+}
+
+.role-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.role-admin-badge {
+  background: rgba(10, 92, 54, 0.2);
+  color: var(--brand-green);
+}
+
+.role-pres-badge {
+  background: rgba(217, 119, 6, 0.2);
+  color: #d97706;
+}
+
+.role-public-badge {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.role-card-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.role-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.role-card-desc {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.login-form-box {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-login-submit {
+  width: 100%;
+  height: 44px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.login-hint-text {
+  text-align: center;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.login-hint-text code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+

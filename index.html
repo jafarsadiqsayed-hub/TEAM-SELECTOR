@@ -43,6 +43,21 @@
 
     <!-- Header Action Toolbar -->
     <div class="header-actions">
+      <!-- Session Role Badge & Switch Button -->
+      <div class="session-role-pill" id="session-role-badge" title="Active Access Mode">
+        <span class="role-icon" id="role-badge-icon">👑</span>
+        <span class="role-name" id="role-badge-name">Admin Mode</span>
+      </div>
+
+      <button class="btn-action-outline btn-role-switch" id="btn-logout-role" title="Switch Login Role or Logout">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Switch Mode</span>
+      </button>
+
       <!-- Supabase Cloud Sync Status -->
       <div class="cloud-status-pill connected" id="cloud-sync-status" title="Supabase Cloud Database Realtime Sync">
         <span class="status-dot"></span>
@@ -299,6 +314,7 @@
         <button class="modal-tab-btn active" data-tab="tab-draft-control">Draft Operations</button>
         <button class="modal-tab-btn" data-tab="tab-student-mgmt">Roster Management</button>
         <button class="modal-tab-btn" data-tab="tab-branding-settings">Portal Settings</button>
+        <button class="modal-tab-btn" data-tab="tab-security-settings">Security & Passwords</button>
         <button class="modal-tab-btn" data-tab="tab-data-backup">Cloud & Records</button>
       </div>
 
@@ -435,7 +451,40 @@
           </form>
         </div>
 
-        <!-- TAB 4: CLOUD & RECORDS -->
+        <!-- TAB 4: SECURITY & PASSWORDS -->
+        <div class="tab-pane" id="tab-security-settings">
+          <div class="admin-section-block">
+            <h4>Access Credentials & Password Management</h4>
+            <p class="section-desc">Update passwords for each role. Passwords are saved and synchronized across sessions.</p>
+            
+            <form id="password-change-form">
+              <div class="form-group">
+                <label>Admin Password</label>
+                <input type="text" id="pwd-admin-input" required placeholder="admin">
+                <small class="form-hint">Controls full drafting, coin toss, student edits & settings.</small>
+              </div>
+
+              <div class="form-group">
+                <label>Presentation Screen Password</label>
+                <input type="text" id="pwd-pres-input" required placeholder="presentation">
+                <small class="form-hint">Controls TV / auditorium projector display mode with real-time remote animations.</small>
+              </div>
+
+              <div class="form-group">
+                <label>Public Viewer Password</label>
+                <input type="text" id="pwd-public-input" required placeholder="public">
+                <small class="form-hint">Controls general audience viewer mode (leave empty or keep simple for easy public access).</small>
+              </div>
+
+              <div class="form-actions-row">
+                <button type="submit" class="btn-primary">Update Passwords</button>
+                <button type="button" class="btn-secondary" id="btn-reset-passwords-default">Reset to Defaults</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- TAB 5: CLOUD & RECORDS -->
         <div class="tab-pane" id="tab-data-backup">
           
           <div class="admin-section-block">
@@ -488,6 +537,75 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       3-Tier Login Gateway Modal
+       ========================================================================== -->
+  <div class="login-gateway-backdrop" id="login-gateway-modal" style="display: flex;">
+    <div class="login-gateway-window">
+      <div class="login-header-section">
+        <img src="LOGO.jpg.jpeg" alt="Academy Logo" class="login-logo-img">
+        <h2 class="login-title">KANNIYATH USTHAD ISLAMIC ACADEMY</h2>
+        <p class="login-subtitle">ARTS FEST 2026 — TEAM SELECTION ACCESS GATEWAY</p>
+      </div>
+
+      <p class="login-instruction">Select your access mode to continue:</p>
+
+      <div class="login-roles-grid">
+        <!-- Role 1: Admin -->
+        <div class="login-role-card active" data-role-select="admin">
+          <div class="role-card-badge role-admin-badge">Full Control</div>
+          <div class="role-card-icon">👑</div>
+          <h3 class="role-card-title">Admin</h3>
+          <p class="role-card-desc">Draft & select students, undo picks, coin toss, roster edits & passwords.</p>
+        </div>
+
+        <!-- Role 2: Presentation Screen -->
+        <div class="login-role-card" data-role-select="presentation">
+          <div class="role-card-badge role-pres-badge">TV Stage View</div>
+          <div class="role-card-icon">📺</div>
+          <h3 class="role-card-title">Presentation Screen</h3>
+          <p class="role-card-desc">Live TV display with instant remote selection animations, audio & full-screen stage mode.</p>
+        </div>
+
+        <!-- Role 3: Public Viewer -->
+        <div class="login-role-card" data-role-select="public">
+          <div class="role-card-badge role-public-badge">Audience Live</div>
+          <div class="role-card-icon">👁️</div>
+          <h3 class="role-card-title">Public Viewer</h3>
+          <p class="role-card-desc">Read-only live audience portal to browse students, search sections, and view rosters.</p>
+        </div>
+      </div>
+
+      <!-- Authentication Form -->
+      <form id="login-form" class="login-form-box">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" required placeholder="admin" value="admin" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="admin" value="admin" autocomplete="current-password">
+          </div>
+        </div>
+
+        <div class="login-actions-row">
+          <button type="submit" class="btn-primary btn-login-submit" id="btn-login-submit">
+            <span>Enter Portal</span>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <div class="login-hint-text">
+          <span>💡 Default Logins: <code>ADMIN: admin</code> • <code>PRESENTATION: presentation</code> • <code>PUBLIC: public</code></span>
+        </div>
+      </form>
     </div>
   </div>
 

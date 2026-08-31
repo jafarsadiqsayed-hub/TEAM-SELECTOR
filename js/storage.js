@@ -1,9 +1,17 @@
 // Storage, Synchronization, and Import/Export Manager
+const DEFAULT_PASSWORDS = {
+  admin: "admin",
+  presentation: "presentation",
+  public: "public"
+};
+
 class StorageManager {
   constructor() {
     this.STUDENTS_KEY = 'kanniyath_arts_fest_students_v3';
     this.SETTINGS_KEY = 'kanniyath_arts_fest_settings_v3';
     this.HISTORY_KEY = 'kanniyath_arts_fest_history_v3';
+    this.PASSWORDS_KEY = 'kanniyath_arts_fest_passwords_v3';
+    this.SESSION_ROLE_KEY = 'kanniyath_arts_fest_session_role_v3';
     this.SYNC_CHANNEL_NAME = 'kanniyath_live_sync_channel';
 
     this.broadcastChannel = null;
@@ -45,6 +53,71 @@ class StorageManager {
     }
   }
 
+  // =========================================================================
+  // Auth & Roles
+  // =========================================================================
+  getPasswords() {
+    const raw = localStorage.getItem(this.PASSWORDS_KEY);
+    if (!raw) {
+      this.savePasswords(DEFAULT_PASSWORDS, false);
+      return { ...DEFAULT_PASSWORDS };
+    }
+    try {
+      return { ...DEFAULT_PASSWORDS, ...JSON.parse(raw) };
+    } catch (e) {
+      return { ...DEFAULT_PASSWORDS };
+    }
+  }
+
+  savePasswords(passwords, shouldBroadcast = true) {
+    localStorage.setItem(this.PASSWORDS_KEY, JSON.stringify(passwords));
+    if (shouldBroadcast) {
+      this.broadcast('PASSWORDS_UPDATED', { passwords });
+    }
+  }
+
+  getCurrentRole() {
+    // Check sessionStorage first, fallback to localStorage
+    return sessionStorage.getItem(this.SESSION_ROLE_KEY) || localStorage.getItem(this.SESSION_ROLE_KEY) || null;
+  }
+
+  setCurrentRole(role, remember = true) {
+    if (role) {
+      sessionStorage.setItem(this.SESSION_ROLE_KEY, role);
+      if (remember) {
+        localStorage.setItem(this.SESSION_ROLE_KEY, role);
+      }
+    } else {
+      sessionStorage.removeItem(this.SESSION_ROLE_KEY);
+      localStorage.removeItem(this.SESSION_ROLE_KEY);
+    }
+  }
+
+  logout() {
+    this.setCurrentRole(null);
+  }
+
+  verifyCredentials(username, password) {
+    if (!username) return null;
+    const u = username.trim().toLowerCase();
+    const p = (password || '').trim();
+    const passwords = this.getPasswords();
+
+    if ((u === 'admin' || u === 'administrator') && p === (passwords.admin || 'admin')) {
+      return 'admin';
+    }
+    if ((u === 'presentation' || u === 'screen' || u === 'tv' || u === 'stage') && p === (passwords.presentation || 'presentation')) {
+      return 'presentation';
+    }
+    if ((u === 'public' || u === 'viewer' || u === 'audience' || u === 'guest') && (p === (passwords.public || 'public') || p === '')) {
+      return 'public';
+    }
+    return null;
+  }
+
+  // =========================================================================
+  // Students & Settings
+  // =========================================================================
   getStudents() {
     const raw = localStorage.getItem(this.STUDENTS_KEY);
     if (!raw) {
@@ -53,7 +126,6 @@ class StorageManager {
     }
     try {
       const parsed = JSON.parse(raw);
-      // If empty or outdated dataset without our 3 sections, reset to DEFAULT_STUDENTS
       if (!Array.isArray(parsed) || parsed.length === 0 || (parsed[0] && !['Secondary', 'Senior Secondary', 'Degree and PG'].includes(parsed[0].section))) {
         this.saveStudents(DEFAULT_STUDENTS);
         return JSON.parse(JSON.stringify(DEFAULT_STUDENTS));
@@ -113,6 +185,7 @@ class StorageManager {
     this.saveStudents(DEFAULT_STUDENTS, false);
     this.saveSettings(DEFAULT_SETTINGS, false);
     this.saveHistory([], false);
+    this.savePasswords(DEFAULT_PASSWORDS, false);
     this.broadcast('FULL_RESET', {
       students: DEFAULT_STUDENTS,
       settings: DEFAULT_SETTINGS,
