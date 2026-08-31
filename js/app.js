@@ -1285,6 +1285,10 @@ class TeamSelectionApp {
   }
 
   toggleHistoryDrawer(forceState = null) {
+    if (this.currentRole === 'public') {
+      if (this.dom.historyDrawer) this.dom.historyDrawer.classList.remove('open');
+      return;
+    }
     if (forceState !== null) {
       this.dom.historyDrawer.classList.toggle('open', forceState);
     } else {

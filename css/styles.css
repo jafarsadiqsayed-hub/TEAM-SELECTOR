@@ -1725,6 +1725,8 @@ body.role-presentation #btn-header-undo,
 body.role-presentation .card-action-footer,
 body.role-public #btn-open-admin,
 body.role-public #btn-header-undo,
+body.role-public #btn-toggle-history,
+body.role-public .mobile-tab-btn[data-mobile-view="history"],
 body.role-public .card-action-footer {
   display: none !important;
 }
@@ -2137,6 +2139,11 @@ body.role-public .student-card:not(.selected) {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.login-form-box .form-grid-2 {
+  grid-template-columns: 1fr !important;
+  gap: 0.85rem !important;
 }
 
 .btn-login-submit {
