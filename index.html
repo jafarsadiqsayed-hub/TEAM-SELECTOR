@@ -118,11 +118,9 @@
 
       <!-- Category Stats Strip -->
       <div class="team-stats-strip" id="team-a-stats">
-        <span class="stat-item"><span class="stat-dot stat-green"></span> Stage: <strong id="t-a-dnc">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-green"></span> Music: <strong id="t-a-mus">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-green"></span> Drama: <strong id="t-a-thr">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-green"></span> Arts: <strong id="t-a-art">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-green"></span> Lit: <strong id="t-a-lit">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Secondary: <strong id="t-a-sec">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Senior Sec: <strong id="t-a-ss">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Degree & PG: <strong id="t-a-dpg">0</strong></span>
       </div>
 
       <div class="team-roster-list" id="team-a-roster">
@@ -153,32 +151,26 @@
             type="text" 
             id="student-search-input" 
             class="student-search-input" 
-            placeholder="Search student name, roll number, or category..."
+            placeholder="Search student name, ID, or section..."
             autocomplete="off"
             spellcheck="false"
           >
-          <div class="search-count-badge" id="available-counter-display">75 AVAILABLE</div>
+          <div class="search-count-badge" id="available-counter-display">60 AVAILABLE</div>
         </div>
 
         <!-- Section Category Segment Tabs -->
         <div class="section-tabs-bar" id="section-filter-buttons">
           <button class="filter-btn active" data-section="all">
-            All <span class="filter-count" id="count-filter-all">75</span>
+            All <span class="filter-count" id="count-filter-all">60</span>
           </button>
-          <button class="filter-btn" data-section="Cultural & Stage">
-            Cultural & Stage <span class="filter-count" id="count-filter-dance">15</span>
+          <button class="filter-btn" data-section="Secondary">
+            Secondary <span class="filter-count" id="count-filter-sec">20</span>
           </button>
-          <button class="filter-btn" data-section="Music & Vocals">
-            Music & Vocals <span class="filter-count" id="count-filter-music">15</span>
+          <button class="filter-btn" data-section="Senior Secondary">
+            Senior Secondary <span class="filter-count" id="count-filter-ss">20</span>
           </button>
-          <button class="filter-btn" data-section="Theater & Drama">
-            Theater & Drama <span class="filter-count" id="count-filter-theater">15</span>
-          </button>
-          <button class="filter-btn" data-section="Fine Arts & Design">
-            Fine Arts & Design <span class="filter-count" id="count-filter-finearts">15</span>
-          </button>
-          <button class="filter-btn" data-section="Literary & Oratory">
-            Literary & Oratory <span class="filter-count" id="count-filter-literary">15</span>
+          <button class="filter-btn" data-section="Degree and PG">
+            Degree & PG <span class="filter-count" id="count-filter-dpg">20</span>
           </button>
         </div>
       </div>
@@ -206,11 +198,9 @@
 
       <!-- Category Stats Strip -->
       <div class="team-stats-strip" id="team-b-stats">
-        <span class="stat-item"><span class="stat-dot stat-gold"></span> Stage: <strong id="t-b-dnc">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-gold"></span> Music: <strong id="t-b-mus">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-gold"></span> Drama: <strong id="t-b-thr">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-gold"></span> Arts: <strong id="t-b-art">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-gold"></span> Lit: <strong id="t-b-lit">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Secondary: <strong id="t-b-sec">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Senior Sec: <strong id="t-b-ss">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Degree & PG: <strong id="t-b-dpg">0</strong></span>
       </div>
 
       <div class="team-roster-list" id="team-b-roster">
@@ -245,7 +235,7 @@
 
       <div class="hero-info">
         <h2 class="hero-student-name" id="hero-student-name">Student Name</h2>
-        <p class="hero-student-details" id="hero-student-details">Cultural & Stage • Solo Classical</p>
+        <p class="hero-student-details" id="hero-student-details">Secondary • SEC-101</p>
       </div>
 
       <div class="hero-card-footer">
@@ -340,7 +330,7 @@
         <!-- TAB 2: ROSTER MANAGEMENT -->
         <div class="tab-pane" id="tab-student-mgmt">
           <div class="roster-toolbar">
-            <span class="roster-count-label">Total Registered: <strong id="admin-student-count">75</strong> Students</span>
+            <span class="roster-count-label">Total Registered: <strong id="admin-student-count">60</strong> Students</span>
             <button class="btn-primary" id="btn-toggle-add-student">+ Register Student</button>
           </div>
 
@@ -353,29 +343,21 @@
               <div class="form-grid-2">
                 <div class="form-group">
                   <label>Full Name</label>
-                  <input type="text" id="form-student-name" required placeholder="e.g. Ananya Sharma">
+                  <input type="text" id="form-student-name" required placeholder="e.g. Muhammed Sinan">
                 </div>
                 <div class="form-group">
-                  <label>Roll Number / ID</label>
-                  <input type="text" id="form-student-roll" required placeholder="e.g. ART-101">
+                  <label>Student ID / Roll Number</label>
+                  <input type="text" id="form-student-roll" required placeholder="e.g. SEC-101">
                 </div>
               </div>
 
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label>Festival Section</label>
-                  <select id="form-student-section" required>
-                    <option value="Cultural & Stage">Cultural & Stage</option>
-                    <option value="Music & Vocals">Music & Vocals</option>
-                    <option value="Theater & Drama">Theater & Drama</option>
-                    <option value="Fine Arts & Design">Fine Arts & Design</option>
-                    <option value="Literary & Oratory">Literary & Oratory</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Specific Talent / Sub-Category</label>
-                  <input type="text" id="form-student-talent" required placeholder="e.g. Classical Solo">
-                </div>
+              <div class="form-group">
+                <label>Festival Section</label>
+                <select id="form-student-section" required>
+                  <option value="Secondary">Secondary</option>
+                  <option value="Senior Secondary">Senior Secondary</option>
+                  <option value="Degree and PG">Degree and PG</option>
+                </select>
               </div>
 
               <div class="form-group">
@@ -402,10 +384,9 @@
               <thead>
                 <tr>
                   <th>Photo</th>
-                  <th>Roll</th>
+                  <th>Student ID</th>
                   <th>Name</th>
                   <th>Section</th>
-                  <th>Category</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -493,13 +474,13 @@
           <div class="admin-section-block">
             <h4>Import Roster</h4>
             <div class="import-card">
-              <p>Import custom student records from a CSV file (Format: Roll Number, Name, Section, Category, Photo URL).</p>
+              <p>Import custom student records from a CSV file (Format: Student ID, Name, Section, Photo URL).</p>
               <div class="import-actions">
                 <label class="btn-primary file-upload-btn">
                   Import CSV File
                   <input type="file" id="btn-import-csv-file" accept=".csv,.txt" style="display:none">
                 </label>
-                <button class="btn-secondary" id="btn-restore-sample-data">Restore Default 75 Students</button>
+                <button class="btn-secondary" id="btn-restore-sample-data">Restore Default 60 Students</button>
               </div>
             </div>
           </div>

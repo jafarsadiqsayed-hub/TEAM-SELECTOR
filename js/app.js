@@ -49,11 +49,9 @@ class TeamSelectionApp {
       teamAIcon: document.getElementById('team-a-icon'),
       teamACount: document.getElementById('team-a-count'),
       teamARoster: document.getElementById('team-a-roster'),
-      tADnc: document.getElementById('t-a-dnc'),
-      tAMus: document.getElementById('t-a-mus'),
-      tAThr: document.getElementById('t-a-thr'),
-      tAArt: document.getElementById('t-a-art'),
-      tALit: document.getElementById('t-a-lit'),
+      tASec: document.getElementById('t-a-sec'),
+      tASs: document.getElementById('t-a-ss'),
+      tADpg: document.getElementById('t-a-dpg'),
 
       // Team B Panel
       teamBContainer: document.getElementById('team-b-container'),
@@ -62,11 +60,9 @@ class TeamSelectionApp {
       teamBIcon: document.getElementById('team-b-icon'),
       teamBCount: document.getElementById('team-b-count'),
       teamBRoster: document.getElementById('team-b-roster'),
-      tBDnc: document.getElementById('t-b-dnc'),
-      tBMus: document.getElementById('t-b-mus'),
-      tBThr: document.getElementById('t-b-thr'),
-      tBArt: document.getElementById('t-b-art'),
-      tBLit: document.getElementById('t-b-lit'),
+      tBSec: document.getElementById('t-b-sec'),
+      tBSs: document.getElementById('t-b-ss'),
+      tBDpg: document.getElementById('t-b-dpg'),
 
       // Center Stage
       studentSearchInput: document.getElementById('student-search-input'),
@@ -76,11 +72,9 @@ class TeamSelectionApp {
 
       // Filter Counts
       countFilterAll: document.getElementById('count-filter-all'),
-      countFilterDance: document.getElementById('count-filter-dance'),
-      countFilterMusic: document.getElementById('count-filter-music'),
-      countFilterTheater: document.getElementById('count-filter-theater'),
-      countFilterFineArts: document.getElementById('count-filter-finearts'),
-      countFilterLiterary: document.getElementById('count-filter-literary'),
+      countFilterSec: document.getElementById('count-filter-sec'),
+      countFilterSs: document.getElementById('count-filter-ss'),
+      countFilterDpg: document.getElementById('count-filter-dpg'),
 
       // Hero Reveal Modal
       heroRevealModal: document.getElementById('hero-reveal-modal'),
@@ -116,7 +110,6 @@ class TeamSelectionApp {
       formStudentName: document.getElementById('form-student-name'),
       formStudentRoll: document.getElementById('form-student-roll'),
       formStudentSection: document.getElementById('form-student-section'),
-      formStudentTalent: document.getElementById('form-student-talent'),
       formStudentPhoto: document.getElementById('form-student-photo'),
       formPhotoFile: document.getElementById('form-photo-file'),
       btnCancelStudentForm: document.getElementById('btn-cancel-student-form'),
@@ -218,7 +211,6 @@ class TeamSelectionApp {
         student.name = updated.name;
         student.rollNo = updated.roll;
         student.section = updated.section;
-        student.subCategory = updated.talent;
         student.photo = updated.photo;
         student.status = updated.selected_by ? 'selected' : 'available';
         student.team = updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null;
@@ -230,7 +222,6 @@ class TeamSelectionApp {
           rollNo: updated.roll,
           name: updated.name,
           section: updated.section,
-          subCategory: updated.talent,
           photo: updated.photo,
           status: updated.selected_by ? 'selected' : 'available',
           team: updated.selected_by ? (updated.selected_by === 'A' ? 'team-a' : 'team-b') : null,
@@ -375,7 +366,6 @@ class TeamSelectionApp {
       studentName: student.name,
       rollNo: student.rollNo,
       section: student.section,
-      subCategory: student.subCategory,
       photo: student.photo,
       team: currentTurn,
       teamName: teamConfig.name,
@@ -417,7 +407,7 @@ class TeamSelectionApp {
 
     this.dom.heroStudentPhoto.src = student.photo || fallbackPhoto;
     this.dom.heroStudentName.textContent = student.name;
-    this.dom.heroStudentDetails.textContent = `${student.section} • ${student.subCategory || student.rollNo}`;
+    this.dom.heroStudentDetails.textContent = `${student.section} • ID: ${student.rollNo}`;
 
     this.dom.heroCardInner.className = `hero-reveal-card ${teamType === 'team-a' ? 'team-a-reveal' : 'team-b-reveal'}`;
     this.dom.heroPillBadge.textContent = `OFFICIAL DRAFT SELECTION #${student.selectionOrder}`;
@@ -589,7 +579,6 @@ class TeamSelectionApp {
       const matchQuery = !query || 
         student.name.toLowerCase().includes(query) ||
         student.rollNo.toLowerCase().includes(query) ||
-        (student.subCategory && student.subCategory.toLowerCase().includes(query)) ||
         student.section.toLowerCase().includes(query);
 
       return matchSection && matchQuery;
@@ -599,12 +588,10 @@ class TeamSelectionApp {
     const availableCount = this.students.filter(s => s.status === 'available').length;
     this.dom.availableCounterDisplay.textContent = `${availableCount} AVAILABLE`;
 
-    this.dom.countFilterAll.textContent = this.students.filter(s => s.status === 'available').length;
-    this.dom.countFilterDance.textContent = this.students.filter(s => s.section === 'Cultural & Stage' && s.status === 'available').length;
-    this.dom.countFilterMusic.textContent = this.students.filter(s => s.section === 'Music & Vocals' && s.status === 'available').length;
-    this.dom.countFilterTheater.textContent = this.students.filter(s => s.section === 'Theater & Drama' && s.status === 'available').length;
-    this.dom.countFilterFineArts.textContent = this.students.filter(s => s.section === 'Fine Arts & Design' && s.status === 'available').length;
-    this.dom.countFilterLiterary.textContent = this.students.filter(s => s.section === 'Literary & Oratory' && s.status === 'available').length;
+    if (this.dom.countFilterAll) this.dom.countFilterAll.textContent = this.students.filter(s => s.status === 'available').length;
+    if (this.dom.countFilterSec) this.dom.countFilterSec.textContent = this.students.filter(s => s.section === 'Secondary' && s.status === 'available').length;
+    if (this.dom.countFilterSs) this.dom.countFilterSs.textContent = this.students.filter(s => s.section === 'Senior Secondary' && s.status === 'available').length;
+    if (this.dom.countFilterDpg) this.dom.countFilterDpg.textContent = this.students.filter(s => s.section === 'Degree and PG' && s.status === 'available').length;
 
     if (filtered.length === 0) {
       this.dom.studentGridContainer.innerHTML = `
@@ -653,7 +640,6 @@ class TeamSelectionApp {
         </div>
         <div class="card-body">
           <h3 class="card-student-name">${student.name}</h3>
-          <p class="card-student-talent">${student.subCategory || student.section}</p>
           <div class="card-action-footer">
             <button class="btn-select-student" tabindex="-1">
               ${isSelected ? 'Drafted' : 'Draft for ' + (this.settings.currentTurn === 'team-a' ? 'Team A' : 'Team B')}
@@ -672,18 +658,14 @@ class TeamSelectionApp {
     this.dom.teamBCount.textContent = teamBStudents.length;
 
     // Team A Stats
-    this.dom.tADnc.textContent = teamAStudents.filter(s => s.section === 'Cultural & Stage').length;
-    this.dom.tAMus.textContent = teamAStudents.filter(s => s.section === 'Music & Vocals').length;
-    this.dom.tAThr.textContent = teamAStudents.filter(s => s.section === 'Theater & Drama').length;
-    this.dom.tAArt.textContent = teamAStudents.filter(s => s.section === 'Fine Arts & Design').length;
-    this.dom.tALit.textContent = teamAStudents.filter(s => s.section === 'Literary & Oratory').length;
+    if (this.dom.tASec) this.dom.tASec.textContent = teamAStudents.filter(s => s.section === 'Secondary').length;
+    if (this.dom.tASs) this.dom.tASs.textContent = teamAStudents.filter(s => s.section === 'Senior Secondary').length;
+    if (this.dom.tADpg) this.dom.tADpg.textContent = teamAStudents.filter(s => s.section === 'Degree and PG').length;
 
     // Team B Stats
-    this.dom.tBDnc.textContent = teamBStudents.filter(s => s.section === 'Cultural & Stage').length;
-    this.dom.tBMus.textContent = teamBStudents.filter(s => s.section === 'Music & Vocals').length;
-    this.dom.tBThr.textContent = teamBStudents.filter(s => s.section === 'Theater & Drama').length;
-    this.dom.tBArt.textContent = teamBStudents.filter(s => s.section === 'Fine Arts & Design').length;
-    this.dom.tBLit.textContent = teamBStudents.filter(s => s.section === 'Literary & Oratory').length;
+    if (this.dom.tBSec) this.dom.tBSec.textContent = teamBStudents.filter(s => s.section === 'Secondary').length;
+    if (this.dom.tBSs) this.dom.tBSs.textContent = teamBStudents.filter(s => s.section === 'Senior Secondary').length;
+    if (this.dom.tBDpg) this.dom.tBDpg.textContent = teamBStudents.filter(s => s.section === 'Degree and PG').length;
 
     // Render Lists
     if (teamAStudents.length === 0) {
@@ -692,6 +674,8 @@ class TeamSelectionApp {
           <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
           <p>No students drafted yet</p>
           <small>Selected members will appear in this roster</small>
@@ -707,6 +691,8 @@ class TeamSelectionApp {
           <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
           <p>No students drafted yet</p>
           <small>Selected members will appear in this roster</small>
@@ -762,7 +748,7 @@ class TeamSelectionApp {
               <span class="history-time-stamp">${item.timestamp}</span>
             </div>
             <div class="history-student-title">${item.studentName}</div>
-            <div class="history-student-sub">${item.section} • #${item.selectionOrder}</div>
+            <div class="history-student-sub">${item.section} • ID: ${item.rollNo || '-'}</div>
           </div>
         </div>
       `;
@@ -785,8 +771,7 @@ class TeamSelectionApp {
           <td><img src="${s.photo || fallbackPhoto}" class="admin-table-thumb" onerror="this.src='${fallbackPhoto}'"></td>
           <td style="font-weight:700; color:var(--brand-green)">${s.rollNo}</td>
           <td style="font-weight:600">${s.name}</td>
-          <td>${s.section}</td>
-          <td style="color:var(--text-muted)">${s.subCategory || '-'}</td>
+          <td><span class="badge-section-cell">${s.section}</span></td>
           <td>${statusHtml}</td>
           <td>
             <button class="btn-table-action btn-table-edit" onclick="window.app.editStudent('${s.id}')">Edit</button>
@@ -808,7 +793,6 @@ class TeamSelectionApp {
       this.dom.formStudentName.value = student.name;
       this.dom.formStudentRoll.value = student.rollNo;
       this.dom.formStudentSection.value = student.section;
-      this.dom.formStudentTalent.value = student.subCategory || '';
       this.dom.formStudentPhoto.value = student.photo || '';
     } else {
       document.getElementById('student-form-title').textContent = 'Register Student';
@@ -866,7 +850,6 @@ class TeamSelectionApp {
     const name = this.dom.formStudentName.value.trim();
     const rollNo = this.dom.formStudentRoll.value.trim();
     const section = this.dom.formStudentSection.value;
-    const subCategory = this.dom.formStudentTalent.value.trim();
     const photo = this.dom.formStudentPhoto.value.trim() || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0a5c36&color=fff&size=200`;
 
     let targetStudent = null;
@@ -876,7 +859,6 @@ class TeamSelectionApp {
         student.name = name;
         student.rollNo = rollNo;
         student.section = section;
-        student.subCategory = subCategory;
         student.photo = photo;
         targetStudent = student;
       }
@@ -886,7 +868,6 @@ class TeamSelectionApp {
         rollNo: rollNo,
         name: name,
         section: section,
-        subCategory: subCategory,
         photo: photo,
         status: 'available',
         team: null,
@@ -953,11 +934,11 @@ class TeamSelectionApp {
   }
 
   confirmRestoreSampleData() {
-    if (confirm('Restore the default 75 sample students dataset across all sections? Current changes will be overwritten.')) {
+    if (confirm('Restore the default 60 sample students dataset across the 3 sections? Current changes will be overwritten.')) {
       window.storageManager.resetAllToDefault();
       this.loadFromStorage(true);
       this.renderAll();
-      alert('Sample dataset with 75 students successfully restored.');
+      alert('Sample dataset with 60 students successfully restored.');
     }
   }
 

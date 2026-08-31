@@ -1525,6 +1525,17 @@ body.turn-b-active .student-card:hover .btn-select-student {
   object-fit: cover;
 }
 
+.badge-section-cell {
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  border-radius: 4px;
+  background: var(--brand-green-subtle);
+  border: 1px solid var(--brand-green-border);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--brand-green);
+}
+
 .btn-table-action {
   font-size: 0.74rem;
   font-weight: 600;

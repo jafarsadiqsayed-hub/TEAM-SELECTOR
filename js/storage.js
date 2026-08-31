@@ -1,10 +1,10 @@
 // Storage, Synchronization, and Import/Export Manager
 class StorageManager {
   constructor() {
-    this.STUDENTS_KEY = 'kalotsav_arts_fest_students_v1';
-    this.SETTINGS_KEY = 'kalotsav_arts_fest_settings_v1';
-    this.HISTORY_KEY = 'kalotsav_arts_fest_history_v1';
-    this.SYNC_CHANNEL_NAME = 'kalotsav_live_sync_channel';
+    this.STUDENTS_KEY = 'kanniyath_arts_fest_students_v2';
+    this.SETTINGS_KEY = 'kanniyath_arts_fest_settings_v2';
+    this.HISTORY_KEY = 'kanniyath_arts_fest_history_v2';
+    this.SYNC_CHANNEL_NAME = 'kanniyath_live_sync_channel';
 
     this.broadcastChannel = null;
     this.initBroadcastChannel();
@@ -52,7 +52,13 @@ class StorageManager {
       return JSON.parse(JSON.stringify(DEFAULT_STUDENTS));
     }
     try {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      // If empty or outdated dataset without our 3 sections, reset to DEFAULT_STUDENTS
+      if (!Array.isArray(parsed) || parsed.length === 0 || (parsed[0] && !['Secondary', 'Senior Secondary', 'Degree and PG'].includes(parsed[0].section))) {
+        this.saveStudents(DEFAULT_STUDENTS);
+        return JSON.parse(JSON.stringify(DEFAULT_STUDENTS));
+      }
+      return parsed;
     } catch (e) {
       console.error('Error parsing students from localStorage, restoring defaults:', e);
       return JSON.parse(JSON.stringify(DEFAULT_STUDENTS));
@@ -116,7 +122,7 @@ class StorageManager {
 
   // Export current rosters and student database to CSV
   exportToCSV(students, settings) {
-    const headers = ["ID", "Roll Number", "Name", "Section", "Category / Talent", "Status", "Assigned Team", "Selection Order", "Selection Time"];
+    const headers = ["ID", "Student ID", "Name", "Section", "Status", "Assigned Team", "Selection Order", "Selection Time"];
     const rows = students.map(s => {
       let teamName = "None";
       if (s.team === "team-a") teamName = settings.teamA.name;
@@ -127,7 +133,6 @@ class StorageManager {
         `"${s.rollNo || ''}"`,
         `"${(s.name || '').replace(/"/g, '""')}"`,
         `"${s.section || ''}"`,
-        `"${(s.subCategory || '').replace(/"/g, '""')}"`,
         `"${s.status || 'available'}"`,
         `"${teamName}"`,
         `"${s.selectionOrder || ''}"`,
@@ -177,7 +182,6 @@ class StorageManager {
 
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i];
-      // Regex for CSV split handling quotes
       const values = [];
       let inQuotes = false;
       let currentVal = '';
@@ -196,20 +200,29 @@ class StorageManager {
       values.push(currentVal.trim().replace(/^["']|["']$/g, ''));
 
       if (values.length >= 2) {
-        // Map fields
         const name = values[headers.indexOf('name')] || values[2] || values[0] || `Student ${i}`;
-        const rollNo = values[headers.indexOf('roll number')] || values[headers.indexOf('rollno')] || values[1] || `ROLL-${100 + i}`;
-        const section = values[headers.indexOf('section')] || values[3] || "Fine Arts";
-        const subCategory = values[headers.indexOf('category / talent')] || values[headers.indexOf('talent')] || values[4] || "Talent";
-        const photo = values[headers.indexOf('photo')] || values[5] || "";
+        const rollNo = values[headers.indexOf('student id')] || values[headers.indexOf('roll number')] || values[headers.indexOf('rollno')] || values[headers.indexOf('id')] || values[1] || `SEC-${100 + i}`;
+        let rawSection = values[headers.indexOf('section')] || values[3] || "Secondary";
+        
+        // Normalize Section to 3 categories
+        let section = "Secondary";
+        const lowSec = rawSection.toLowerCase();
+        if (lowSec.includes('degree') || lowSec.includes('pg')) {
+          section = "Degree and PG";
+        } else if (lowSec.includes('senior') || lowSec.includes('higher') || lowSec.includes('plus two') || lowSec.includes('ss')) {
+          section = "Senior Secondary";
+        } else {
+          section = "Secondary";
+        }
+
+        const photo = values[headers.indexOf('photo')] || values[headers.indexOf('photo url')] || values[4] || "";
 
         result.push({
           id: `STU-CSV-${Date.now()}-${i}`,
           rollNo: rollNo,
           name: name,
           section: section,
-          subCategory: subCategory,
-          photo: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=200`,
+          photo: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0a5c36&color=fff&size=200`,
           status: "available",
           team: null,
           selectionOrder: null

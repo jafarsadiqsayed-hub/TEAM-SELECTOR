@@ -26,15 +26,15 @@ Right-click on **`index.html`** ➡️ Choose **Open with** ➡️ Select **Goog
 - **Locking**: Once drafted, a student card is marked and locked so they can never be selected twice.
 
 ### 2. Live Team Rosters
-- **Left Panel (Team A)**: Shows Team A's drafted students with live count and section talent breakdown (Dance, Music, Theater, Fine Arts, Literary).
+- **Left Panel (Team A)**: Shows Team A's drafted students with live count and section breakdown (Secondary, Senior Secondary, Degree and PG).
 - **Right Panel (Team B)**: Shows Team B's drafted students with live count and section breakdown.
 
 ### 3. Stage & Projector Presentation Mode
-- Click the **📺 Screen Icon** in the top bar or press the **`F`** key on your keyboard to toggle high-contrast **Fullscreen Presentation Mode** optimized for large stage projectors and 4K auditorium displays.
+- Click the **📺 Screen Icon** in the top bar or press the **`F`** key on your keyboard to toggle high-contrast **Fullscreen Presentation Mode** optimized for large stage projectors and auditorium displays.
 
 ### 4. Search & Filter
-- **Instant Search**: Type any student name, roll number, or specific talent (e.g. "Bharatanatyam", "Guitar", "Debate") in the search bar.
-- **Section Tabs**: Click **Dance**, **Music**, **Theater**, **Fine Arts**, or **Literary** to filter the pool instantly.
+- **Instant Search**: Type any student name, Student ID, or section in the search bar.
+- **Section Tabs**: Click **Secondary**, **Senior Secondary**, or **Degree & PG** to filter the pool instantly.
 
 ### 5. Undo Last Selection
 - Click **↩️ Undo Pick** or press **`Ctrl + Z`** to revert the most recent pick.
@@ -42,11 +42,11 @@ Right-click on **`index.html`** ➡️ Choose **Open with** ➡️ Select **Goog
 
 ### 6. Operator & Admin Control Center
 Click the **⚙️ Admin Center** button in the header to:
-- **Add / Edit / Delete Students**: Add real students, edit details, and upload student photos directly from your computer.
-- **Customize Teams & Fest Branding**: Change the fest title, subtitle, Team A & Team B names, logos, colors, and taglines.
+- **Add / Edit / Delete Students**: Add real students (ID, Name, Section, Photo) and upload photos directly from your computer.
+- **Customize Teams & Fest Branding**: Change the fest title, subtitle, Team A & Team B names, logos, and taglines.
 - **Coin Toss**: Run a random coin flip mini-game on stage to determine which team gets the 1st pick.
 - **Export Roster to Excel/CSV**: Download the final selected teams in an official spreadsheet for printing and event records.
-- **Import Students from CSV**: Bulk load your own class or department list with 1 click.
+- **Import Students from CSV**: Bulk load your student list with 1 click.
 - **Reset Entire Selection**: Start a fresh draft anytime.
 
 ---
@@ -59,4 +59,4 @@ Click the **⚙️ Admin Center** button in the header to:
 ---
 
 ## 🎨 Preloaded Sample Dataset
-The portal comes pre-populated with **75 realistic sample students** across 5 arts fest categories (*Classical Dance, Western Vocals, Mono Act, Painting, Debate, etc.*) so you can test all features right away! You can replace or edit them whenever you are ready.
+The portal comes pre-populated with **60 realistic sample students** across 3 festival sections (*Secondary, Senior Secondary, Degree and PG*) so you can test all features right away! You can replace or edit them whenever you are ready.
