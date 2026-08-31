@@ -934,11 +934,11 @@ class TeamSelectionApp {
   }
 
   confirmRestoreSampleData() {
-    if (confirm('Restore the default 60 sample students dataset across the 3 sections? Current changes will be overwritten.')) {
+    if (confirm('Restore the default 77 registered students dataset across the 3 sections? Current changes will be overwritten.')) {
       window.storageManager.resetAllToDefault();
       this.loadFromStorage(true);
       this.renderAll();
-      alert('Sample dataset with 60 students successfully restored.');
+      alert('Student dataset with 77 students successfully restored.');
     }
   }
 

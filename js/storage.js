@@ -1,9 +1,9 @@
 // Storage, Synchronization, and Import/Export Manager
 class StorageManager {
   constructor() {
-    this.STUDENTS_KEY = 'kanniyath_arts_fest_students_v2';
-    this.SETTINGS_KEY = 'kanniyath_arts_fest_settings_v2';
-    this.HISTORY_KEY = 'kanniyath_arts_fest_history_v2';
+    this.STUDENTS_KEY = 'kanniyath_arts_fest_students_v3';
+    this.SETTINGS_KEY = 'kanniyath_arts_fest_settings_v3';
+    this.HISTORY_KEY = 'kanniyath_arts_fest_history_v3';
     this.SYNC_CHANNEL_NAME = 'kanniyath_live_sync_channel';
 
     this.broadcastChannel = null;
