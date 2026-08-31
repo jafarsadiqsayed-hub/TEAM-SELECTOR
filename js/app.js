@@ -13,6 +13,22 @@ class TeamSelectionApp {
     this.isRevealing = false;
     this.activeMobileView = 'stage'; // 'stage' | 'team-a' | 'team-b' | 'history'
 
+    // Fortune Wheel Physics State
+    this.wheelState = {
+      angle: 0,
+      isSpinning: false,
+      segments: [
+        { team: 'team-a', label: 'TEAM A', color: '#0a5c36', textColor: '#ffffff' },
+        { team: 'team-b', label: 'TEAM B', color: '#c59b27', textColor: '#1a1500' },
+        { team: 'team-a', label: 'TEAM A', color: '#0f7646', textColor: '#ffffff' },
+        { team: 'team-b', label: 'TEAM B', color: '#d9a72c', textColor: '#1a1500' },
+        { team: 'team-a', label: 'TEAM A', color: '#0a5c36', textColor: '#ffffff' },
+        { team: 'team-b', label: 'TEAM B', color: '#c59b27', textColor: '#1a1500' },
+        { team: 'team-a', label: 'TEAM A', color: '#0f7646', textColor: '#ffffff' },
+        { team: 'team-b', label: 'TEAM B', color: '#d9a72c', textColor: '#1a1500' }
+      ]
+    };
+
     this.dom = {};
   }
 
@@ -23,6 +39,7 @@ class TeamSelectionApp {
     this.checkAuth();
     this.renderAll();
     this.initSupabase();
+    this.initWheelCanvas();
     console.log('Kanniyath Usthad Islamic Academy Arts Fest Portal Initialized. Session:', window.appSessionId);
   }
 
@@ -34,6 +51,21 @@ class TeamSelectionApp {
       liveTurnPill: document.getElementById('live-turn-pill'),
       turnTeamDisplay: document.getElementById('turn-team-display'),
       turnSubLabel: document.getElementById('turn-sub-label'),
+
+      // Live Selection Round & Pick Counter
+      turnRoundPill: document.getElementById('turn-round-pill'),
+      roundNumberDisplay: document.getElementById('round-number-display'),
+      pickNumberDisplay: document.getElementById('pick-number-display'),
+
+      // Fortune Spinner Wheel Elements
+      btnOpenWheel: document.getElementById('btn-open-wheel'),
+      spinnerWheelModal: document.getElementById('spinner-wheel-modal'),
+      wheelCanvas: document.getElementById('wheel-canvas'),
+      btnTriggerSpin: document.getElementById('btn-trigger-spin'),
+      btnCloseWheel: document.getElementById('btn-close-wheel'),
+      wheelResultBanner: document.getElementById('wheel-result-banner'),
+      wheelWinnerPill: document.getElementById('wheel-winner-pill'),
+      wheelWinnerDesc: document.getElementById('wheel-winner-desc'),
 
       // Session Role & Access
       sessionRoleBadge: document.getElementById('session-role-badge'),
@@ -176,19 +208,62 @@ class TeamSelectionApp {
     this.settings = window.storageManager.getSettings();
     this.history = window.storageManager.getHistory();
 
-    // Ensure Academy branding defaults if missing
     if (!this.settings.collegeName) {
       this.settings.collegeName = DEFAULT_SETTINGS.collegeName;
       this.settings.festSubtitle = DEFAULT_SETTINGS.festSubtitle;
       this.settings.teamA = DEFAULT_SETTINGS.teamA;
       this.settings.teamB = DEFAULT_SETTINGS.teamB;
+      this.settings.startingTeam = 'team-a';
       window.storageManager.saveSettings(this.settings, false);
+    }
+
+    if (!this.settings.startingTeam) {
+      this.settings.startingTeam = 'team-a';
     }
 
     if (initial) {
       window.soundEngine.enabled = this.settings.soundEnabled ?? true;
       window.confettiEngine.enabled = this.settings.confettiEnabled ?? true;
     }
+  }
+
+  // =========================================================================
+  // Snake Draft & Selection Round Calculation (A > B > B > A > A > B)
+  // =========================================================================
+  getSnakeTurnInfo(pickIndex, startingTeam = 'team-a') {
+    const round = Math.floor(pickIndex / 2) + 1;
+    const isFirstInRound = (pickIndex % 2 === 0);
+    const otherTeam = (startingTeam === 'team-a' ? 'team-b' : 'team-a');
+
+    let turnTeam;
+    let sequenceDesc;
+
+    if (round % 2 === 1) {
+      // Odd Round (Round 1, 3, 5...): StartingTeam -> OtherTeam (e.g. A > B)
+      turnTeam = isFirstInRound ? startingTeam : otherTeam;
+      sequenceDesc = startingTeam === 'team-a' ? 'A > B' : 'B > A';
+    } else {
+      // Even Round (Round 2, 4, 6...): OtherTeam -> StartingTeam (e.g. B > A)
+      turnTeam = isFirstInRound ? otherTeam : startingTeam;
+      sequenceDesc = startingTeam === 'team-a' ? 'B > A' : 'A > B';
+    }
+
+    const overallPickNumber = pickIndex + 1;
+    const ordinal = this.getOrdinal(overallPickNumber);
+
+    return {
+      round,
+      overallPickNumber,
+      ordinal,
+      turnTeam,
+      sequenceDesc
+    };
+  }
+
+  getOrdinal(n) {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
   }
 
   // =========================================================================
@@ -269,7 +344,7 @@ class TeamSelectionApp {
     this.dom.body.classList.remove('role-admin', 'role-presentation', 'role-public');
     this.dom.body.classList.add(`role-${role}`);
 
-    // Update session header badge
+    // Update session header badge with clean vector SVGs
     if (this.dom.roleBadgeIcon && this.dom.roleBadgeName) {
       if (role === 'admin') {
         this.dom.roleBadgeIcon.innerHTML = `<svg style="width:14px;height:14px;display:inline-block;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
@@ -281,6 +356,10 @@ class TeamSelectionApp {
         this.dom.roleBadgeIcon.innerHTML = `<svg style="width:14px;height:14px;display:inline-block;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
         this.dom.roleBadgeName.textContent = 'Viewer Mode';
       }
+    }
+
+    if (role === 'public') {
+      this.toggleHistoryDrawer(false);
     }
 
     // Default mobile layout state
@@ -314,8 +393,10 @@ class TeamSelectionApp {
     } else if (view === 'team-b') {
       this.dom.body.classList.add('mob-view-team-b');
     } else if (view === 'history') {
-      this.dom.body.classList.add('mob-view-stage');
-      this.toggleHistoryDrawer(true);
+      if (this.currentRole !== 'public') {
+        this.dom.body.classList.add('mob-view-stage');
+        this.toggleHistoryDrawer(true);
+      }
     }
 
     if (this.dom.mobileTabBtns) {
@@ -463,6 +544,204 @@ class TeamSelectionApp {
   }
 
   // =========================================================================
+  // Interactive Fortune Spinner Wheel
+  // =========================================================================
+  initWheelCanvas() {
+    if (!this.dom.wheelCanvas) return;
+    this.drawWheel(0);
+  }
+
+  drawWheel(angle = 0) {
+    const canvas = this.dom.wheelCanvas;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = width / 2 - 10;
+    const segments = this.wheelState.segments;
+    const numSegments = segments.length;
+    const arcSize = (2 * Math.PI) / numSegments;
+
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate(angle);
+
+    for (let i = 0; i < numSegments; i++) {
+      const seg = segments[i];
+      const startAngle = i * arcSize;
+      const endAngle = startAngle + arcSize;
+
+      // Slice
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = seg.color;
+      ctx.fill();
+
+      // Border line
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Text label
+      ctx.save();
+      ctx.rotate(startAngle + arcSize / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = seg.textColor;
+      ctx.font = 'bold 22px Outfit, sans-serif';
+      ctx.fillText(seg.label, radius - 35, 8);
+      ctx.restore();
+    }
+
+    // Center jewel
+    ctx.beginPath();
+    ctx.arc(0, 0, 36, 0, 2 * Math.PI);
+    ctx.fillStyle = '#1e293b';
+    ctx.fill();
+    ctx.strokeStyle = '#c59b27';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 13px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('ARTS FEST', 0, 0);
+
+    ctx.restore();
+  }
+
+  openWheelModal(shouldBroadcast = true) {
+    if (this.dom.spinnerWheelModal) {
+      this.dom.spinnerWheelModal.classList.add('active');
+      if (this.dom.wheelResultBanner) this.dom.wheelResultBanner.style.display = 'none';
+      if (this.dom.btnTriggerSpin) this.dom.btnTriggerSpin.disabled = false;
+      this.drawWheel(this.wheelState.angle);
+    }
+    if (shouldBroadcast && this.currentRole === 'admin') {
+      window.storageManager.broadcast('WHEEL_OPEN', {});
+    }
+  }
+
+  closeWheelModal(shouldBroadcast = true) {
+    if (this.dom.spinnerWheelModal) {
+      this.dom.spinnerWheelModal.classList.remove('active');
+    }
+    if (shouldBroadcast && this.currentRole === 'admin') {
+      window.storageManager.broadcast('WHEEL_CLOSE', {});
+    }
+  }
+
+  spinFortuneWheel(targetAngle = null, winner = null, duration = 4800) {
+    if (this.wheelState.isSpinning) return;
+    this.wheelState.isSpinning = true;
+
+    if (this.dom.btnTriggerSpin) this.dom.btnTriggerSpin.disabled = true;
+    if (this.dom.wheelResultBanner) this.dom.wheelResultBanner.style.display = 'none';
+
+    // If Admin spins without pre-determined winner, pick winner randomly
+    if (!winner) {
+      winner = Math.random() > 0.5 ? 'team-a' : 'team-b';
+      const numSegments = this.wheelState.segments.length;
+      const arcSize = (2 * Math.PI) / numSegments;
+
+      // Valid indices for this winner
+      const validIndices = [];
+      this.wheelState.segments.forEach((seg, i) => {
+        if (seg.team === winner) validIndices.push(i);
+      });
+      const chosenSegmentIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+
+      // Needle pointer is at top (-PI/2)
+      // Angle: 2*PI - (chosenSegmentIndex * arcSize + arcSize / 2) - PI/2
+      const baseLandingAngle = (1.5 * Math.PI) - (chosenSegmentIndex * arcSize + arcSize / 2);
+      const spins = 6 + Math.floor(Math.random() * 3); // 6-8 full rotations
+      targetAngle = spins * 2 * Math.PI + baseLandingAngle;
+
+      if (this.currentRole === 'admin') {
+        window.storageManager.broadcast('WHEEL_SPIN_START', {
+          targetAngle,
+          winner,
+          duration
+        });
+      }
+    }
+
+    const startAngle = this.wheelState.angle % (2 * Math.PI);
+    const totalRotation = targetAngle - startAngle;
+    const startTime = performance.now();
+    let lastTickSegment = -1;
+
+    const animateWheel = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease out quintic
+      const easeOut = 1 - Math.pow(1 - progress, 4);
+      const currentAngle = startAngle + totalRotation * easeOut;
+      this.wheelState.angle = currentAngle;
+      this.drawWheel(currentAngle);
+
+      // Mechanical tick sounds
+      const numSegments = this.wheelState.segments.length;
+      const currentSegment = Math.floor((currentAngle / ((2 * Math.PI) / numSegments))) % numSegments;
+      if (currentSegment !== lastTickSegment && progress < 0.98) {
+        lastTickSegment = currentSegment;
+        window.soundEngine.playWheelTick();
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animateWheel);
+      } else {
+        this.wheelState.isSpinning = false;
+        this.handleWheelSpinFinish(winner);
+      }
+    };
+
+    requestAnimationFrame(animateWheel);
+  }
+
+  handleWheelSpinFinish(winner) {
+    const isTeamA = winner === 'team-a';
+    const teamName = isTeamA ? this.settings.teamA.name : this.settings.teamB.name;
+    const teamColor = isTeamA ? '#0a5c36' : '#c59b27';
+
+    window.soundEngine.playWheelWin();
+    window.confettiEngine.fire(teamColor);
+
+    // Update Banner
+    if (this.dom.wheelWinnerPill) {
+      this.dom.wheelWinnerPill.textContent = `${teamName.toUpperCase()} WON 1ST SELECTION!`;
+      this.dom.wheelWinnerPill.style.color = teamColor;
+    }
+    if (this.dom.wheelWinnerDesc) {
+      const seq = isTeamA ? 'A > B > B > A > A > B' : 'B > A > A > B > B > A';
+      this.dom.wheelWinnerDesc.textContent = `Round 1 starts with ${teamName} • Snake Order: ${seq}`;
+    }
+    if (this.dom.wheelResultBanner) {
+      this.dom.wheelResultBanner.style.display = 'block';
+    }
+
+    // Set starting team and turn for draft
+    this.settings.startingTeam = winner;
+    this.settings.currentTurn = winner;
+    window.storageManager.saveSettings(this.settings);
+
+    if (window.supabaseService) {
+      window.supabaseService.updatePortalState(winner);
+    }
+
+    this.renderTurnIndicator();
+  }
+
+  // =========================================================================
   // Event Bindings
   // =========================================================================
   bindEvents() {
@@ -491,6 +770,29 @@ class TeamSelectionApp {
     // Switch Role / Logout
     if (this.dom.btnLogoutRole) {
       this.dom.btnLogoutRole.addEventListener('click', () => this.logout());
+    }
+
+    // Fortune Spinner Wheel Trigger & Modal Actions
+    if (this.dom.btnOpenWheel) {
+      this.dom.btnOpenWheel.addEventListener('click', () => {
+        if (this.currentRole === 'admin') {
+          this.openWheelModal(true);
+        }
+      });
+    }
+
+    if (this.dom.btnTriggerSpin) {
+      this.dom.btnTriggerSpin.addEventListener('click', () => {
+        if (this.currentRole === 'admin') {
+          this.spinFortuneWheel();
+        }
+      });
+    }
+
+    if (this.dom.btnCloseWheel) {
+      this.dom.btnCloseWheel.addEventListener('click', () => {
+        this.closeWheelModal(true);
+      });
     }
 
     // Mobile Navigation Tabs & Back Buttons
@@ -567,7 +869,9 @@ class TeamSelectionApp {
     this.dom.adminSetTurnA.addEventListener('click', () => this.setTurn('team-a'));
     this.dom.adminSetTurnB.addEventListener('click', () => this.setTurn('team-b'));
     if (this.dom.adminCoinTossBtn) {
-      this.dom.adminCoinTossBtn.addEventListener('click', () => this.performCoinToss());
+      this.dom.adminCoinTossBtn.addEventListener('click', () => {
+        this.openWheelModal(true);
+      });
     }
     this.dom.adminUndoBtn.addEventListener('click', () => this.undoLastSelection());
     this.dom.adminResetDraftBtn.addEventListener('click', () => this.confirmResetDraft());
@@ -617,6 +921,7 @@ class TeamSelectionApp {
         this.dismissHeroReveal();
         this.closeAdminModal();
         this.toggleHistoryDrawer(false);
+        this.closeWheelModal(true);
       } else if (e.key.toLowerCase() === 'f' && !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         this.togglePresentationMode();
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
@@ -629,7 +934,7 @@ class TeamSelectionApp {
   }
 
   // ==========================================================================
-  // Core Selection Flow
+  // Core Selection Flow with Snake Draft Sequence
   // ==========================================================================
   selectStudent(studentId) {
     if (this.currentRole !== 'admin') {
@@ -640,12 +945,14 @@ class TeamSelectionApp {
     const student = this.students.find(s => s.id === studentId);
     if (!student || student.status === 'selected') return;
 
-    const currentTurn = this.settings.currentTurn || 'team-a';
-    const teamConfig = currentTurn === 'team-a' ? this.settings.teamA : this.settings.teamB;
+    // Calculate active Snake turn
+    const turnInfo = this.getSnakeTurnInfo(this.history.length, this.settings.startingTeam || 'team-a');
+    const draftingTeam = this.settings.currentTurn || turnInfo.turnTeam;
+    const teamConfig = draftingTeam === 'team-a' ? this.settings.teamA : this.settings.teamB;
 
     // Update Student Record
     student.status = 'selected';
-    student.team = currentTurn;
+    student.team = draftingTeam;
     student.selectionOrder = this.history.length + 1;
     student.selectedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -656,9 +963,10 @@ class TeamSelectionApp {
       rollNo: student.rollNo,
       section: student.section,
       photo: student.photo,
-      team: currentTurn,
+      team: draftingTeam,
       teamName: teamConfig.name,
       selectionOrder: student.selectionOrder,
+      round: turnInfo.round,
       timestamp: student.selectedAt
     };
     this.history.unshift(historyItem);
@@ -669,26 +977,26 @@ class TeamSelectionApp {
     window.storageManager.broadcast('STUDENT_SELECTED', {
       student,
       teamConfig,
-      currentTurn
+      currentTurn: draftingTeam
     });
 
     // Trigger Sound & Confetti
-    window.soundEngine.playSelectionSound(currentTurn);
-    window.confettiEngine.fire(teamConfig.color || (currentTurn === 'team-a' ? '#0a5c36' : '#c59b27'));
+    window.soundEngine.playSelectionSound(draftingTeam);
+    window.confettiEngine.fire(teamConfig.color || (draftingTeam === 'team-a' ? '#0a5c36' : '#c59b27'));
 
     // Show Hero Stage Reveal
-    this.showHeroReveal(student, teamConfig, currentTurn);
+    this.showHeroReveal(student, teamConfig, draftingTeam);
 
-    // Switch Turn automatically
-    const nextTurn = currentTurn === 'team-a' ? 'team-b' : 'team-a';
-    this.settings.currentTurn = nextTurn;
+    // Determine next Snake Turn automatically
+    const nextTurnInfo = this.getSnakeTurnInfo(this.history.length, this.settings.startingTeam || 'team-a');
+    this.settings.currentTurn = nextTurnInfo.turnTeam;
     window.storageManager.saveSettings(this.settings);
 
     // Supabase Cloud Sync
     if (window.supabaseService) {
-      window.supabaseService.selectStudent(student.id, currentTurn === 'team-a' ? 'A' : 'B', student.selectionOrder);
-      window.supabaseService.updatePortalState(nextTurn);
-      window.supabaseService.recordHistory(student.id, student.name, currentTurn, 'SELECT');
+      window.supabaseService.selectStudent(student.id, draftingTeam === 'team-a' ? 'A' : 'B', student.selectionOrder);
+      window.supabaseService.updatePortalState(nextTurnInfo.turnTeam);
+      window.supabaseService.recordHistory(student.id, student.name, draftingTeam, 'SELECT');
     }
 
     // Update UI
@@ -704,7 +1012,6 @@ class TeamSelectionApp {
 
   showHeroReveal(student, teamConfig, teamType) {
     this.isRevealing = true;
-    const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=0a5c36&color=fff&size=300`;
     const photoSrc = this.getPhotoUrl(student.photo, student.name);
 
     this.dom.heroStudentPhoto.src = photoSrc;
@@ -761,7 +1068,9 @@ class TeamSelectionApp {
       student.selectedAt = null;
     }
 
-    this.settings.currentTurn = lastAction.team;
+    // Roll back to the previous snake turn
+    const turnInfo = this.getSnakeTurnInfo(this.history.length, this.settings.startingTeam || 'team-a');
+    this.settings.currentTurn = turnInfo.turnTeam;
 
     window.storageManager.saveStudents(this.students);
     window.storageManager.saveHistory(this.history);
@@ -770,25 +1079,12 @@ class TeamSelectionApp {
     // Supabase Cloud Sync
     if (window.supabaseService && student) {
       window.supabaseService.undoStudentSelection(student.id);
-      window.supabaseService.updatePortalState(lastAction.team);
+      window.supabaseService.updatePortalState(turnInfo.turnTeam);
       window.supabaseService.recordHistory(student.id, student.name, lastAction.team, 'UNDO');
     }
 
     window.soundEngine.playUndo();
     this.renderAll();
-  }
-
-  performCoinToss() {
-    window.soundEngine.playCoinFlip();
-    const winner = Math.random() > 0.5 ? 'team-a' : 'team-b';
-    const teamName = winner === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name;
-    const teamColor = winner === 'team-a' ? this.settings.teamA.color : this.settings.teamB.color;
-
-    setTimeout(() => {
-      this.setTurn(winner);
-      window.confettiEngine.fire(teamColor);
-      alert(`Coin Toss Result:\n\n${teamName} won the toss and has the active first pick.`);
-    }, 600);
   }
 
   confirmResetDraft() {
@@ -803,6 +1099,7 @@ class TeamSelectionApp {
     });
 
     this.history = [];
+    this.settings.startingTeam = 'team-a';
     this.settings.currentTurn = 'team-a';
 
     window.storageManager.saveStudents(this.students);
@@ -856,6 +1153,7 @@ class TeamSelectionApp {
   }
 
   renderTurnIndicator() {
+    const turnInfo = this.getSnakeTurnInfo(this.history.length, this.settings.startingTeam || 'team-a');
     const isTeamA = this.settings.currentTurn === 'team-a';
     const activeTeam = isTeamA ? this.settings.teamA : this.settings.teamB;
 
@@ -867,6 +1165,14 @@ class TeamSelectionApp {
 
     this.dom.turnTeamDisplay.textContent = activeTeam.name.toUpperCase();
     this.dom.turnSubLabel.textContent = `ACTIVE TURN (${activeTeam.shortCode})`;
+
+    // Round & Selection Pick indicator
+    if (this.dom.roundNumberDisplay) {
+      this.dom.roundNumberDisplay.textContent = `ROUND ${turnInfo.round}`;
+    }
+    if (this.dom.pickNumberDisplay) {
+      this.dom.pickNumberDisplay.textContent = `${turnInfo.ordinal} Selection (${turnInfo.sequenceDesc})`;
+    }
 
     this.dom.btnHeaderUndo.disabled = this.history.length === 0 || this.currentRole !== 'admin';
     this.dom.adminUndoBtn.disabled = this.history.length === 0 || this.currentRole !== 'admin';
@@ -1224,6 +1530,7 @@ class TeamSelectionApp {
         if (confirm(`Found ${importedStudents.length} student records in CSV. Replace current student dataset?`)) {
           this.students = importedStudents;
           this.history = [];
+          this.settings.startingTeam = 'team-a';
           this.settings.currentTurn = 'team-a';
           window.storageManager.saveStudents(this.students);
           window.storageManager.saveHistory(this.history);
@@ -1337,6 +1644,19 @@ class TeamSelectionApp {
       window.soundEngine.playSelectionSound(currentTurn);
       window.confettiEngine.fire(teamConfig.color || (currentTurn === 'team-a' ? '#0a5c36' : '#c59b27'));
       this.showHeroReveal(student, teamConfig, currentTurn);
+    }
+
+    if (data.type === 'WHEEL_OPEN') {
+      this.openWheelModal(false);
+    }
+
+    if (data.type === 'WHEEL_CLOSE') {
+      this.closeWheelModal(false);
+    }
+
+    if (data.type === 'WHEEL_SPIN_START' && data.payload) {
+      this.openWheelModal(false);
+      this.spinFortuneWheel(data.payload.targetAngle, data.payload.winner, data.payload.duration);
     }
 
     this.loadFromStorage(false);
