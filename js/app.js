@@ -51,12 +51,14 @@ class TeamSelectionApp {
       btnQuickPublicEnter: document.getElementById('btn-quick-public-enter'),
       roleCards: document.querySelectorAll('.login-role-card'),
 
-      // Mobile View Tabs
+      // Mobile View Tabs & Back Buttons
       mobileViewTabs: document.getElementById('mobile-view-tabs'),
       mobileTabBtns: document.querySelectorAll('.mobile-tab-btn'),
       mobAvailCount: document.getElementById('mob-avail-count'),
       mobACount: document.getElementById('mob-a-count'),
       mobBCount: document.getElementById('mob-b-count'),
+      btnBackPoolA: document.getElementById('btn-back-pool-a'),
+      btnBackPoolB: document.getElementById('btn-back-pool-b'),
 
       // Buttons
       btnHeaderUndo: document.getElementById('btn-header-undo'),
@@ -491,13 +493,27 @@ class TeamSelectionApp {
       this.dom.btnLogoutRole.addEventListener('click', () => this.logout());
     }
 
-    // Mobile Navigation Tabs
+    // Mobile Navigation Tabs & Back Buttons
     if (this.dom.mobileTabBtns) {
       this.dom.mobileTabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           this.setMobileView(btn.dataset.mobileView);
           window.soundEngine.playClick();
         });
+      });
+    }
+
+    if (this.dom.btnBackPoolA) {
+      this.dom.btnBackPoolA.addEventListener('click', () => {
+        this.setMobileView('stage');
+        window.soundEngine.playClick();
+      });
+    }
+
+    if (this.dom.btnBackPoolB) {
+      this.dom.btnBackPoolB.addEventListener('click', () => {
+        this.setMobileView('stage');
+        window.soundEngine.playClick();
       });
     }
 

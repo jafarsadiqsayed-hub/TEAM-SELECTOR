@@ -1767,20 +1767,24 @@ body.role-public .student-card:not(.selected) {
 /* ==============================================================================
    Mobile View Navigation & Public Mobile Responsive UI
    ============================================================================== */
-.mobile-view-tabs {
+.mobile-view-tabs-container {
   display: none;
+  width: 100%;
+}
+
+.mobile-view-tabs {
+  display: flex;
   background: var(--bg-card);
   border: 1px solid var(--border-main);
   border-radius: var(--radius-lg);
   padding: 0.35rem;
-  margin-bottom: 0.85rem;
   gap: 0.35rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 .mobile-tab-btn {
   flex: 1;
-  padding: 0.55rem 0.4rem;
+  padding: 0.55rem 0.35rem;
   font-size: 0.75rem;
   font-weight: 700;
   border: none;
@@ -1802,16 +1806,45 @@ body.role-public .student-card:not(.selected) {
   box-shadow: 0 2px 8px rgba(10, 92, 54, 0.3);
 }
 
+.btn-mobile-back {
+  display: none;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-main);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-mobile-back:hover {
+  background: var(--brand-green);
+  color: #ffffff;
+  border-color: var(--brand-green);
+}
+
 @media (max-width: 1024px) {
+  .mobile-view-tabs-container {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0.5rem 1rem 0.25rem;
+    background: var(--bg-main);
+  }
+
+  .btn-mobile-back {
+    display: inline-flex;
+  }
+
   .main-layout {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - var(--header-height));
-    padding: 0.75rem;
-  }
-
-  .mobile-view-tabs {
-    display: flex;
+    height: auto;
+    min-height: calc(100vh - var(--header-height) - 50px);
+    padding: 0.5rem 1rem 1rem;
   }
 
   /* Dynamic mobile tab view swapping */
@@ -1830,7 +1863,7 @@ body.role-public .student-card:not(.selected) {
     display: flex !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
   }
 
   body.mob-view-team-b .stage-center-panel,
@@ -1841,7 +1874,7 @@ body.role-public .student-card:not(.selected) {
     display: flex !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
   }
 
   .student-grid {
