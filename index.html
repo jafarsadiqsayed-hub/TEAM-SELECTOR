@@ -133,9 +133,9 @@
 
       <!-- Category Stats Strip -->
       <div class="team-stats-strip" id="team-a-stats">
-        <span class="stat-item"><span class="stat-dot stat-green"></span> Secondary: <strong id="t-a-sec">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-green"></span> Senior Sec: <strong id="t-a-ss">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-green"></span> Degree & PG: <strong id="t-a-dpg">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Sub Junior: <strong id="t-a-sub">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Junior: <strong id="t-a-jun">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-green"></span> Senior: <strong id="t-a-sen">0</strong></span>
       </div>
 
       <div class="team-roster-list" id="team-a-roster">
@@ -153,8 +153,24 @@
     </aside>
 
     <!-- CENTER COLUMN: AVAILABLE STUDENTS STAGE -->
-    <section class="stage-center-panel">
+    <section class="stage-center-panel" id="stage-center-panel">
       
+      <!-- Mobile View Navigation Tabs (Visible on Mobile Screens) -->
+      <div class="mobile-view-tabs" id="mobile-view-tabs">
+        <button class="mobile-tab-btn active" data-mobile-view="stage">
+          👥 Available (<span id="mob-avail-count">77</span>)
+        </button>
+        <button class="mobile-tab-btn" data-mobile-view="team-a">
+          🟢 Team A (<span id="mob-a-count">0</span>)
+        </button>
+        <button class="mobile-tab-btn" data-mobile-view="team-b">
+          🟡 Team B (<span id="mob-b-count">0</span>)
+        </button>
+        <button class="mobile-tab-btn" data-mobile-view="history">
+          📜 History
+        </button>
+      </div>
+
       <!-- Stage Filter & Search Bar -->
       <div class="stage-control-bar">
         <div class="search-box-wrapper">
@@ -178,14 +194,14 @@
           <button class="filter-btn active" data-section="all">
             All <span class="filter-count" id="count-filter-all">77</span>
           </button>
-          <button class="filter-btn" data-section="Secondary">
-            Secondary <span class="filter-count" id="count-filter-sec">29</span>
+          <button class="filter-btn" data-section="Sub Junior">
+            Sub Junior <span class="filter-count" id="count-filter-sub">29</span>
           </button>
-          <button class="filter-btn" data-section="Senior Secondary">
-            Senior Secondary <span class="filter-count" id="count-filter-ss">22</span>
+          <button class="filter-btn" data-section="Junior">
+            Junior <span class="filter-count" id="count-filter-jun">22</span>
           </button>
-          <button class="filter-btn" data-section="Degree and PG">
-            Degree & PG <span class="filter-count" id="count-filter-dpg">26</span>
+          <button class="filter-btn" data-section="Senior">
+            Senior <span class="filter-count" id="count-filter-sen">26</span>
           </button>
         </div>
       </div>
@@ -213,9 +229,9 @@
 
       <!-- Category Stats Strip -->
       <div class="team-stats-strip" id="team-b-stats">
-        <span class="stat-item"><span class="stat-dot stat-gold"></span> Secondary: <strong id="t-b-sec">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-gold"></span> Senior Sec: <strong id="t-b-ss">0</strong></span>
-        <span class="stat-item"><span class="stat-dot stat-gold"></span> Degree & PG: <strong id="t-b-dpg">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Sub Junior: <strong id="t-b-sub">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Junior: <strong id="t-b-jun">0</strong></span>
+        <span class="stat-item"><span class="stat-dot stat-gold"></span> Senior: <strong id="t-b-sen">0</strong></span>
       </div>
 
       <div class="team-roster-list" id="team-b-roster">
@@ -370,9 +386,9 @@
               <div class="form-group">
                 <label>Festival Section</label>
                 <select id="form-student-section" required>
-                  <option value="Secondary">Secondary</option>
-                  <option value="Senior Secondary">Senior Secondary</option>
-                  <option value="Degree and PG">Degree and PG</option>
+                  <option value="Sub Junior">Sub Junior</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Senior">Senior</option>
                 </select>
               </div>
 
@@ -572,10 +588,11 @@
 
         <!-- Role 3: Public Viewer -->
         <div class="login-role-card" data-role-select="public">
-          <div class="role-card-badge role-public-badge">Audience Live</div>
+          <div class="role-card-badge role-public-badge">No Password Needed</div>
           <div class="role-card-icon">👁️</div>
           <h3 class="role-card-title">Public Viewer</h3>
-          <p class="role-card-desc">Read-only live audience portal to browse students, search sections, and view rosters.</p>
+          <p class="role-card-desc">Live audience portal to browse students, search sections, and watch team rosters on mobile or desktop.</p>
+          <button type="button" class="btn-public-quick" id="btn-quick-public-enter">Enter as Viewer →</button>
         </div>
       </div>
 
@@ -586,7 +603,7 @@
             <label for="login-username">Username</label>
             <input type="text" id="login-username" required placeholder="admin" value="admin" autocomplete="username">
           </div>
-          <div class="form-group">
+          <div class="form-group" id="login-password-group">
             <label for="login-password">Password</label>
             <input type="password" id="login-password" placeholder="admin" value="admin" autocomplete="current-password">
           </div>
@@ -603,7 +620,7 @@
         </div>
 
         <div class="login-hint-text">
-          <span>💡 Default Logins: <code>ADMIN: admin</code> • <code>PRESENTATION: presentation</code> • <code>PUBLIC: public</code></span>
+          <span>💡 Logins: <code>ADMIN: admin</code> • <code>PRESENTATION: presentation</code> • <code>PUBLIC: Free Access (No Password)</code></span>
         </div>
       </form>
     </div>

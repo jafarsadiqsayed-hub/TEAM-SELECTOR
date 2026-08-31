@@ -2,16 +2,16 @@
 const DEFAULT_PASSWORDS = {
   admin: "admin",
   presentation: "presentation",
-  public: "public"
+  public: ""
 };
 
 class StorageManager {
   constructor() {
-    this.STUDENTS_KEY = 'kanniyath_arts_fest_students_v3';
-    this.SETTINGS_KEY = 'kanniyath_arts_fest_settings_v3';
-    this.HISTORY_KEY = 'kanniyath_arts_fest_history_v3';
-    this.PASSWORDS_KEY = 'kanniyath_arts_fest_passwords_v3';
-    this.SESSION_ROLE_KEY = 'kanniyath_arts_fest_session_role_v3';
+    this.STUDENTS_KEY = 'kanniyath_arts_fest_students_v4';
+    this.SETTINGS_KEY = 'kanniyath_arts_fest_settings_v4';
+    this.HISTORY_KEY = 'kanniyath_arts_fest_history_v4';
+    this.PASSWORDS_KEY = 'kanniyath_arts_fest_passwords_v4';
+    this.SESSION_ROLE_KEY = 'kanniyath_arts_fest_session_role_v4';
     this.SYNC_CHANNEL_NAME = 'kanniyath_live_sync_channel';
 
     this.broadcastChannel = null;
@@ -77,7 +77,6 @@ class StorageManager {
   }
 
   getCurrentRole() {
-    // Check sessionStorage first, fallback to localStorage
     return sessionStorage.getItem(this.SESSION_ROLE_KEY) || localStorage.getItem(this.SESSION_ROLE_KEY) || null;
   }
 
@@ -103,15 +102,18 @@ class StorageManager {
     const p = (password || '').trim();
     const passwords = this.getPasswords();
 
+    // Public Viewer requires NO password
+    if (u === 'public' || u === 'viewer' || u === 'audience' || u === 'guest') {
+      return 'public';
+    }
+
     if ((u === 'admin' || u === 'administrator') && p === (passwords.admin || 'admin')) {
       return 'admin';
     }
     if ((u === 'presentation' || u === 'screen' || u === 'tv' || u === 'stage') && p === (passwords.presentation || 'presentation')) {
       return 'presentation';
     }
-    if ((u === 'public' || u === 'viewer' || u === 'audience' || u === 'guest') && (p === (passwords.public || 'public') || p === '')) {
-      return 'public';
-    }
+
     return null;
   }
 
@@ -126,7 +128,7 @@ class StorageManager {
     }
     try {
       const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed) || parsed.length === 0 || (parsed[0] && !['Secondary', 'Senior Secondary', 'Degree and PG'].includes(parsed[0].section))) {
+      if (!Array.isArray(parsed) || parsed.length === 0 || (parsed[0] && !['Sub Junior', 'Junior', 'Senior'].includes(parsed[0].section))) {
         this.saveStudents(DEFAULT_STUDENTS);
         return JSON.parse(JSON.stringify(DEFAULT_STUDENTS));
       }
@@ -274,18 +276,22 @@ class StorageManager {
 
       if (values.length >= 2) {
         const name = values[headers.indexOf('name')] || values[2] || values[0] || `Student ${i}`;
-        const rollNo = values[headers.indexOf('student id')] || values[headers.indexOf('roll number')] || values[headers.indexOf('rollno')] || values[headers.indexOf('id')] || values[1] || `SEC-${100 + i}`;
-        let rawSection = values[headers.indexOf('section')] || values[3] || "Secondary";
+        const rollNo = values[headers.indexOf('student id')] || values[headers.indexOf('roll number')] || values[headers.indexOf('rollno')] || values[headers.indexOf('id')] || values[1] || `STU-${100 + i}`;
+        let rawSection = values[headers.indexOf('section')] || values[3] || "Sub Junior";
         
-        // Normalize Section to 3 categories
-        let section = "Secondary";
+        // Normalize Section to 3 categories: Sub Junior, Junior, Senior
+        let section = "Sub Junior";
         const lowSec = rawSection.toLowerCase();
-        if (lowSec.includes('degree') || lowSec.includes('pg')) {
-          section = "Degree and PG";
-        } else if (lowSec.includes('senior') || lowSec.includes('higher') || lowSec.includes('plus two') || lowSec.includes('ss')) {
-          section = "Senior Secondary";
+        if (lowSec.includes('senior') && !lowSec.includes('secondary')) {
+          section = "Senior";
+        } else if (lowSec.includes('degree') || lowSec.includes('pg')) {
+          section = "Senior";
+        } else if (lowSec.includes('junior') && !lowSec.includes('sub')) {
+          section = "Junior";
+        } else if (lowSec.includes('senior secondary') || lowSec.includes('plus two') || lowSec.includes('higher') || lowSec.includes('ss')) {
+          section = "Junior";
         } else {
-          section = "Secondary";
+          section = "Sub Junior";
         }
 
         const photo = values[headers.indexOf('photo')] || values[headers.indexOf('photo url')] || values[4] || "";

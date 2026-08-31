@@ -11,6 +11,7 @@ class TeamSelectionApp {
     this.searchQuery = '';
     this.isPresentationMode = false;
     this.isRevealing = false;
+    this.activeMobileView = 'stage'; // 'stage' | 'team-a' | 'team-b' | 'history'
 
     this.dom = {};
   }
@@ -45,8 +46,17 @@ class TeamSelectionApp {
       loginForm: document.getElementById('login-form'),
       loginUsername: document.getElementById('login-username'),
       loginPassword: document.getElementById('login-password'),
+      loginPasswordGroup: document.getElementById('login-password-group'),
       btnLoginSubmit: document.getElementById('btn-login-submit'),
+      btnQuickPublicEnter: document.getElementById('btn-quick-public-enter'),
       roleCards: document.querySelectorAll('.login-role-card'),
+
+      // Mobile View Tabs
+      mobileViewTabs: document.getElementById('mobile-view-tabs'),
+      mobileTabBtns: document.querySelectorAll('.mobile-tab-btn'),
+      mobAvailCount: document.getElementById('mob-avail-count'),
+      mobACount: document.getElementById('mob-a-count'),
+      mobBCount: document.getElementById('mob-b-count'),
 
       // Buttons
       btnHeaderUndo: document.getElementById('btn-header-undo'),
@@ -65,9 +75,9 @@ class TeamSelectionApp {
       teamAIcon: document.getElementById('team-a-icon'),
       teamACount: document.getElementById('team-a-count'),
       teamARoster: document.getElementById('team-a-roster'),
-      tASec: document.getElementById('t-a-sec'),
-      tASs: document.getElementById('t-a-ss'),
-      tADpg: document.getElementById('t-a-dpg'),
+      tASub: document.getElementById('t-a-sub'),
+      tAJun: document.getElementById('t-a-jun'),
+      tASen: document.getElementById('t-a-sen'),
 
       // Team B Panel
       teamBContainer: document.getElementById('team-b-container'),
@@ -76,11 +86,12 @@ class TeamSelectionApp {
       teamBIcon: document.getElementById('team-b-icon'),
       teamBCount: document.getElementById('team-b-count'),
       teamBRoster: document.getElementById('team-b-roster'),
-      tBSec: document.getElementById('t-b-sec'),
-      tBSs: document.getElementById('t-b-ss'),
-      tBDpg: document.getElementById('t-b-dpg'),
+      tBSub: document.getElementById('t-b-sub'),
+      tBJun: document.getElementById('t-b-jun'),
+      tBSen: document.getElementById('t-b-sen'),
 
       // Center Stage
+      stageCenterPanel: document.getElementById('stage-center-panel'),
       studentSearchInput: document.getElementById('student-search-input'),
       availableCounterDisplay: document.getElementById('available-counter-display'),
       sectionFilterButtons: document.getElementById('section-filter-buttons'),
@@ -88,9 +99,9 @@ class TeamSelectionApp {
 
       // Filter Counts
       countFilterAll: document.getElementById('count-filter-all'),
-      countFilterSec: document.getElementById('count-filter-sec'),
-      countFilterSs: document.getElementById('count-filter-ss'),
-      countFilterDpg: document.getElementById('count-filter-dpg'),
+      countFilterSub: document.getElementById('count-filter-sub'),
+      countFilterJun: document.getElementById('count-filter-jun'),
+      countFilterSen: document.getElementById('count-filter-sen'),
 
       // Hero Reveal Modal
       heroRevealModal: document.getElementById('hero-reveal-modal'),
@@ -211,8 +222,15 @@ class TeamSelectionApp {
     if (this.dom.loginUsername) {
       this.dom.loginUsername.value = role;
     }
-    if (this.dom.loginPassword) {
-      this.dom.loginPassword.value = passwords[role] || role;
+
+    if (role === 'public') {
+      if (this.dom.loginPassword) this.dom.loginPassword.value = '';
+      if (this.dom.loginPasswordGroup) this.dom.loginPasswordGroup.style.display = 'none';
+    } else {
+      if (this.dom.loginPasswordGroup) this.dom.loginPasswordGroup.style.display = 'block';
+      if (this.dom.loginPassword) {
+        this.dom.loginPassword.value = passwords[role] || role;
+      }
     }
   }
 
@@ -223,13 +241,22 @@ class TeamSelectionApp {
 
     const role = window.storageManager.verifyCredentials(username, password);
     if (!role) {
-      alert('Invalid username or password. Please check your credentials.\n\nDefaults:\nAdmin: admin / admin\nPresentation: presentation / presentation\nPublic: public / public');
+      alert('Invalid credentials. Please check your username and password.\n\nDefaults:\nAdmin: admin / admin\nPresentation: presentation / presentation\nPublic: No Password');
       return;
     }
 
     window.storageManager.setCurrentRole(role, true);
     this.applyRole(role);
     this.dom.loginGatewayModal.style.display = 'none';
+    window.soundEngine.playSuccess();
+  }
+
+  enterAsPublicViewer() {
+    window.storageManager.setCurrentRole('public', true);
+    this.applyRole('public');
+    if (this.dom.loginGatewayModal) {
+      this.dom.loginGatewayModal.style.display = 'none';
+    }
     window.soundEngine.playSuccess();
   }
 
@@ -254,6 +281,9 @@ class TeamSelectionApp {
       }
     }
 
+    // Default mobile layout state
+    this.setMobileView('stage');
+
     // Auto presentation mode for TV
     if (role === 'presentation') {
       this.isPresentationMode = true;
@@ -271,6 +301,28 @@ class TeamSelectionApp {
     this.renderTurnIndicator();
   }
 
+  setMobileView(view) {
+    this.activeMobileView = view;
+    this.dom.body.classList.remove('mob-view-stage', 'mob-view-team-a', 'mob-view-team-b');
+
+    if (view === 'stage') {
+      this.dom.body.classList.add('mob-view-stage');
+    } else if (view === 'team-a') {
+      this.dom.body.classList.add('mob-view-team-a');
+    } else if (view === 'team-b') {
+      this.dom.body.classList.add('mob-view-team-b');
+    } else if (view === 'history') {
+      this.dom.body.classList.add('mob-view-stage');
+      this.toggleHistoryDrawer(true);
+    }
+
+    if (this.dom.mobileTabBtns) {
+      this.dom.mobileTabBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mobileView === view);
+      });
+    }
+  }
+
   logout() {
     window.storageManager.logout();
     this.openLoginGateway();
@@ -280,7 +332,7 @@ class TeamSelectionApp {
     const passwords = window.storageManager.getPasswords();
     if (this.dom.pwdAdminInput) this.dom.pwdAdminInput.value = passwords.admin || 'admin';
     if (this.dom.pwdPresInput) this.dom.pwdPresInput.value = passwords.presentation || 'presentation';
-    if (this.dom.pwdPublicInput) this.dom.pwdPublicInput.value = passwords.public || 'public';
+    if (this.dom.pwdPublicInput) this.dom.pwdPublicInput.value = passwords.public || '';
   }
 
   handleSavePasswords(e) {
@@ -292,7 +344,7 @@ class TeamSelectionApp {
     const newPasswords = {
       admin: adminPwd || 'admin',
       presentation: presPwd || 'presentation',
-      public: publicPwd || 'public'
+      public: publicPwd || ''
     };
 
     window.storageManager.savePasswords(newPasswords);
@@ -300,11 +352,11 @@ class TeamSelectionApp {
   }
 
   resetPasswordsDefault() {
-    if (confirm('Reset all login passwords to default credentials?\n\nAdmin: admin\nPresentation: presentation\nPublic: public')) {
+    if (confirm('Reset login passwords to defaults?\n\nAdmin: admin\nPresentation: presentation\nPublic: No Password')) {
       window.storageManager.savePasswords({
         admin: 'admin',
         presentation: 'presentation',
-        public: 'public'
+        public: ''
       });
       this.loadPasswordInputs();
       alert('Passwords reset to defaults.');
@@ -316,13 +368,10 @@ class TeamSelectionApp {
   // =========================================================================
   initSupabase() {
     if (window.supabaseService && window.supabaseService.isConnected) {
-      // 1. Subscribe to Live Realtime updates across devices
       window.supabaseService.subscribeToRealtime({
         onStudentChange: (payload) => this.handleSupabaseStudentChange(payload),
         onStateChange: (payload) => this.handleSupabaseStateChange(payload)
       });
-
-      // 2. Fetch latest data from Supabase
       this.syncWithSupabase(false);
     }
   }
@@ -389,7 +438,7 @@ class TeamSelectionApp {
 
       window.storageManager.saveStudents(this.students, false);
 
-      // Trigger Live Animation & Sound on Presentation / Remote screens when a student is drafted!
+      // Trigger Live Animation & Sound on Presentation / Remote screens
       if (isNewlySelected && student.team) {
         const teamConfig = student.team === 'team-a' ? this.settings.teamA : this.settings.teamB;
         window.soundEngine.playSelectionSound(student.team);
@@ -424,6 +473,14 @@ class TeamSelectionApp {
       });
     }
 
+    // 1-Click Public Enter
+    if (this.dom.btnQuickPublicEnter) {
+      this.dom.btnQuickPublicEnter.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.enterAsPublicViewer();
+      });
+    }
+
     // Login Form
     if (this.dom.loginForm) {
       this.dom.loginForm.addEventListener('submit', (e) => this.handleLoginFormSubmit(e));
@@ -432,6 +489,16 @@ class TeamSelectionApp {
     // Switch Role / Logout
     if (this.dom.btnLogoutRole) {
       this.dom.btnLogoutRole.addEventListener('click', () => this.logout());
+    }
+
+    // Mobile Navigation Tabs
+    if (this.dom.mobileTabBtns) {
+      this.dom.mobileTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.setMobileView(btn.dataset.mobileView);
+          window.soundEngine.playClick();
+        });
+      });
     }
 
     // Search input
@@ -807,10 +874,11 @@ class TeamSelectionApp {
     const availableCount = this.students.filter(s => s.status === 'available').length;
     this.dom.availableCounterDisplay.textContent = `${availableCount} AVAILABLE`;
 
+    if (this.dom.mobAvailCount) this.dom.mobAvailCount.textContent = availableCount;
     if (this.dom.countFilterAll) this.dom.countFilterAll.textContent = this.students.filter(s => s.status === 'available').length;
-    if (this.dom.countFilterSec) this.dom.countFilterSec.textContent = this.students.filter(s => s.section === 'Secondary' && s.status === 'available').length;
-    if (this.dom.countFilterSs) this.dom.countFilterSs.textContent = this.students.filter(s => s.section === 'Senior Secondary' && s.status === 'available').length;
-    if (this.dom.countFilterDpg) this.dom.countFilterDpg.textContent = this.students.filter(s => s.section === 'Degree and PG' && s.status === 'available').length;
+    if (this.dom.countFilterSub) this.dom.countFilterSub.textContent = this.students.filter(s => s.section === 'Sub Junior' && s.status === 'available').length;
+    if (this.dom.countFilterJun) this.dom.countFilterJun.textContent = this.students.filter(s => s.section === 'Junior' && s.status === 'available').length;
+    if (this.dom.countFilterSen) this.dom.countFilterSen.textContent = this.students.filter(s => s.section === 'Senior' && s.status === 'available').length;
 
     if (filtered.length === 0) {
       this.dom.studentGridContainer.innerHTML = `
@@ -880,16 +948,18 @@ class TeamSelectionApp {
 
     this.dom.teamACount.textContent = teamAStudents.length;
     this.dom.teamBCount.textContent = teamBStudents.length;
+    if (this.dom.mobACount) this.dom.mobACount.textContent = teamAStudents.length;
+    if (this.dom.mobBCount) this.dom.mobBCount.textContent = teamBStudents.length;
 
-    // Team A Stats
-    if (this.dom.tASec) this.dom.tASec.textContent = teamAStudents.filter(s => s.section === 'Secondary').length;
-    if (this.dom.tASs) this.dom.tASs.textContent = teamAStudents.filter(s => s.section === 'Senior Secondary').length;
-    if (this.dom.tADpg) this.dom.tADpg.textContent = teamAStudents.filter(s => s.section === 'Degree and PG').length;
+    // Team A Stats: Sub Junior, Junior, Senior
+    if (this.dom.tASub) this.dom.tASub.textContent = teamAStudents.filter(s => s.section === 'Sub Junior').length;
+    if (this.dom.tAJun) this.dom.tAJun.textContent = teamAStudents.filter(s => s.section === 'Junior').length;
+    if (this.dom.tASen) this.dom.tASen.textContent = teamAStudents.filter(s => s.section === 'Senior').length;
 
-    // Team B Stats
-    if (this.dom.tBSec) this.dom.tBSec.textContent = teamBStudents.filter(s => s.section === 'Secondary').length;
-    if (this.dom.tBSs) this.dom.tBSs.textContent = teamBStudents.filter(s => s.section === 'Senior Secondary').length;
-    if (this.dom.tBDpg) this.dom.tBDpg.textContent = teamBStudents.filter(s => s.section === 'Degree and PG').length;
+    // Team B Stats: Sub Junior, Junior, Senior
+    if (this.dom.tBSub) this.dom.tBSub.textContent = teamBStudents.filter(s => s.section === 'Sub Junior').length;
+    if (this.dom.tBJun) this.dom.tBJun.textContent = teamBStudents.filter(s => s.section === 'Junior').length;
+    if (this.dom.tBSen) this.dom.tBSen.textContent = teamBStudents.filter(s => s.section === 'Senior').length;
 
     // Render Lists
     if (teamAStudents.length === 0) {
@@ -1078,7 +1148,7 @@ class TeamSelectionApp {
       // Add new
       const newStudent = {
         id: `STU-${rollNo || Date.now()}`,
-        rollNo: rollNo || `SEC-${this.students.length + 1}`,
+        rollNo: rollNo || `STU-${this.students.length + 1}`,
         name: name,
         section: section,
         photo: photo,
@@ -1158,7 +1228,7 @@ class TeamSelectionApp {
   }
 
   confirmRestoreSampleData() {
-    if (confirm('Restore the default 77 registered students dataset across the 3 sections? Current changes will be overwritten.')) {
+    if (confirm('Restore the default 77 registered students dataset across Sub Junior, Junior, and Senior? Current changes will be overwritten.')) {
       window.storageManager.resetAllToDefault();
       this.loadFromStorage(true);
       this.renderAll();
