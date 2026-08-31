@@ -401,11 +401,19 @@ class TeamSelectionApp {
     this.renderAll();
   }
 
+  getPhotoUrl(photo, name) {
+    if (!photo || photo.trim().length === 0) {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Student')}&background=0a5c36&color=fff&size=300`;
+    }
+    return encodeURI(photo);
+  }
+
   showHeroReveal(student, teamConfig, teamType) {
     this.isRevealing = true;
     const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=0a5c36&color=fff&size=300`;
+    const photoSrc = this.getPhotoUrl(student.photo, student.name);
 
-    this.dom.heroStudentPhoto.src = student.photo || fallbackPhoto;
+    this.dom.heroStudentPhoto.src = photoSrc;
     this.dom.heroStudentName.textContent = student.name;
     this.dom.heroStudentDetails.textContent = `${student.section} • ID: ${student.rollNo}`;
 
@@ -620,6 +628,7 @@ class TeamSelectionApp {
   createStudentCardHtml(student) {
     const isSelected = student.status === 'selected';
     const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=0a5c36&color=fff&size=200`;
+    const photoSrc = this.getPhotoUrl(student.photo, student.name);
     const selectedClass = isSelected ? `selected ${student.team === 'team-a' ? 'selected-team-a' : 'selected-team-b'}` : '';
 
     let bannerHtml = '';
@@ -634,7 +643,7 @@ class TeamSelectionApp {
       <div class="student-card ${selectedClass}" data-student-id="${student.id}" title="${isSelected ? 'Drafted to ' + (student.team === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name) : 'Draft for ' + currentTurnTeamName}">
         ${bannerHtml}
         <div class="card-photo-wrapper">
-          <img src="${student.photo || fallbackPhoto}" alt="${student.name}" class="student-card-photo" loading="lazy" onerror="this.src='${fallbackPhoto}'">
+          <img src="${photoSrc}" alt="${student.name}" class="student-card-photo" loading="lazy" onerror="this.src='${fallbackPhoto}'">
           <span class="card-roll-tag">${student.rollNo}</span>
           <span class="card-section-tag">${student.section}</span>
         </div>
@@ -705,9 +714,10 @@ class TeamSelectionApp {
 
   createRosterCardHtml(student) {
     const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=0a5c36&color=fff&size=100`;
+    const photoSrc = this.getPhotoUrl(student.photo, student.name);
     return `
       <div class="roster-card">
-        <img src="${student.photo || fallbackPhoto}" alt="${student.name}" class="roster-photo-thumb" onerror="this.src='${fallbackPhoto}'">
+        <img src="${photoSrc}" alt="${student.name}" class="roster-photo-thumb" onerror="this.src='${fallbackPhoto}'">
         <div class="roster-info">
           <div class="roster-name-row">
             <h4 class="roster-student-name">${student.name}</h4>
@@ -759,6 +769,7 @@ class TeamSelectionApp {
     this.dom.adminStudentCount.textContent = this.students.length;
     this.dom.adminStudentsTbody.innerHTML = this.students.map(s => {
       const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=0a5c36&color=fff&size=60`;
+      const photoSrc = this.getPhotoUrl(s.photo, s.name);
       let statusHtml = `<span style="color:var(--brand-green); font-weight:600">Available</span>`;
       if (s.status === 'selected') {
         const teamName = s.team === 'team-a' ? this.settings.teamA.name : this.settings.teamB.name;
@@ -768,7 +779,7 @@ class TeamSelectionApp {
 
       return `
         <tr>
-          <td><img src="${s.photo || fallbackPhoto}" class="admin-table-thumb" onerror="this.src='${fallbackPhoto}'"></td>
+          <td><img src="${photoSrc}" class="admin-table-thumb" onerror="this.src='${fallbackPhoto}'"></td>
           <td style="font-weight:700; color:var(--brand-green)">${s.rollNo}</td>
           <td style="font-weight:600">${s.name}</td>
           <td><span class="badge-section-cell">${s.section}</span></td>
