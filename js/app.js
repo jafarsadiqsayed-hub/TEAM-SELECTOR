@@ -314,7 +314,7 @@ class TeamSelectionApp {
       if (this.dom.loginPassword) this.dom.loginPassword.value = '';
       if (this.dom.loginPasswordGroup) this.dom.loginPasswordGroup.style.display = 'none';
     } else {
-      if (this.dom.loginPasswordGroup) this.dom.loginPasswordGroup.style.display = 'block';
+      if (this.dom.loginPasswordGroup) this.dom.loginPasswordGroup.style.display = 'flex';
       if (this.dom.loginPassword) {
         this.dom.loginPassword.value = passwords[role] || role;
       }

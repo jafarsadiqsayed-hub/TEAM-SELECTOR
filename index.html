@@ -624,15 +624,14 @@
 
       <!-- Authentication Form -->
       <form id="login-form" class="login-form-box">
-        <div class="form-grid-2">
-          <div class="form-group">
-            <label for="login-username">Username</label>
-            <input type="text" id="login-username" required placeholder="admin" value="admin" autocomplete="username">
-          </div>
-          <div class="form-group" id="login-password-group">
-            <label for="login-password">Password</label>
-            <input type="password" id="login-password" placeholder="admin" value="admin" autocomplete="current-password">
-          </div>
+        <div class="login-field-row" id="login-username-group">
+          <label class="login-field-label" for="login-username">Username</label>
+          <input type="text" id="login-username" class="login-field-input" required placeholder="admin" value="admin" autocomplete="username">
+        </div>
+        
+        <div class="login-field-row" id="login-password-group">
+          <label class="login-field-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="login-field-input" placeholder="admin" value="admin" autocomplete="current-password">
         </div>
 
         <div class="login-actions-row">
